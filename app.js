@@ -956,24 +956,11 @@ $('#btnReset').addEventListener('click', () => {
 
 /* ===== Init ===== */
 function initApp() {
-  // SVG gradient
-  const svg = document.querySelector('.energy-ring');
-  if (svg) {
-    const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
-    const grad = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
-    grad.id = 'ringGradient';
-    grad.setAttribute('x1','0%'); grad.setAttribute('y1','0%');
-    grad.setAttribute('x2','100%'); grad.setAttribute('y2','100%');
-    const s1 = document.createElementNS('http://www.w3.org/2000/svg','stop');
-    s1.setAttribute('offset','0%'); s1.setAttribute('stop-color','#A1C1A1');
-    const s2 = document.createElementNS('http://www.w3.org/2000/svg','stop');
-    s2.setAttribute('offset','100%'); s2.setAttribute('stop-color','#8BA995');
-    grad.appendChild(s1); grad.appendChild(s2);
-    defs.appendChild(grad);
-    svg.insertBefore(defs, svg.firstChild);
+  const ring = $('#energyRing');
+  if (ring) {
     const c = 2 * Math.PI * 78;
-    const ring = $('#energyRing');
-    if (ring) { ring.setAttribute('stroke-dasharray',c); ring.setAttribute('stroke-dashoffset',c); }
+    ring.setAttribute('stroke-dasharray', c);
+    ring.setAttribute('stroke-dashoffset', c);
   }
   renderToday();
 }
