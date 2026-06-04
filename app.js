@@ -525,6 +525,20 @@ function renderDiary(dateStr) {
   if (editor) {
     editor.value = existingText;
     editor.dataset.diaryDate = dateStr;
+    // If diary has content, show in view mode; else edit mode
+    if (existingText.trim()) {
+      editor.readOnly = true;
+      const saveBtn = $('#btnSaveDiary');
+      const editBtn = $('#btnEditDiary');
+      if (saveBtn) saveBtn.style.display = 'none';
+      if (editBtn) editBtn.style.display = 'inline-block';
+    } else {
+      editor.readOnly = false;
+      const saveBtn = $('#btnSaveDiary');
+      const editBtn = $('#btnEditDiary');
+      if (saveBtn) saveBtn.style.display = 'inline-block';
+      if (editBtn) editBtn.style.display = 'none';
+    }
   }
   if (wordCount) wordCount.textContent = existingText.length + ' 字';
 
@@ -577,7 +591,6 @@ $('#btnSaveDiary').addEventListener('click', () => {
   const dateStr = editor.dataset.diaryDate || todayStr();
   const text = editor.value.trim();
 
-  // Get selected mood
   const selectedMood = $('#moodPicker').querySelector('.mood-option.selected');
   const mood = selectedMood ? selectedMood.dataset.mood : 'smiling';
 
@@ -587,9 +600,37 @@ $('#btnSaveDiary').addEventListener('click', () => {
     delete appData.diaryEntries[dateStr];
   }
   saveData(appData);
-  renderDiary(dateStr);
+
+  // Flash feedback on save button
+  const saveBtn = $('#btnSaveDiary');
+  const originalText = saveBtn.textContent;
+  saveBtn.textContent = '已保存 ✓';
+  saveBtn.style.background = '#4A8F5E';
+
+  setTimeout(() => {
+    saveBtn.textContent = originalText;
+    saveBtn.style.background = '';
+
+    // After save: switch to view mode (readonly + show edit button)
+    if (editor) editor.readOnly = true;
+    saveBtn.style.display = 'none';
+    const editBtn = $('#btnEditDiary');
+    if (editBtn) editBtn.style.display = 'inline-block';
+  }, 1200);
+
   updateMoodDisplay();
   renderCalendar();
+});
+
+// Edit diary button — switch back to edit mode
+$('#btnEditDiary').addEventListener('click', () => {
+  const editor = $('#diaryEditor');
+  if (editor) editor.readOnly = false;
+  const editBtn = $('#btnEditDiary');
+  if (editBtn) editBtn.style.display = 'none';
+  const saveBtn = $('#btnSaveDiary');
+  if (saveBtn) saveBtn.style.display = 'inline-block';
+  if (editor) editor.focus();
 });
 
 // Click mood card to switch to Plans tab (diary lives there now)
