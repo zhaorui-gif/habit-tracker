@@ -98,7 +98,9 @@ body {
   max-width: 430px;
   min-height: 100vh;
   min-height: 100dvh;
-  background: var(--bg);
+  background:
+    linear-gradient(rgba(39,95,62,0.68), rgba(39,95,62,0.72)),
+    url('bg-forest.jpg') center / cover no-repeat fixed;
   position: relative;
   overflow-x: hidden;
   padding-bottom: var(--nav-height);
