@@ -22,8 +22,8 @@
   /* ── Semantic Tokens ── */
   --bg:            var(--forest-700);
   --bg-elevated:   #1F4D32;
-  --surface:       #FFFFFF;
-  --surface-hover: #F2F6F3;
+  --surface:       #B5CABA;
+  --surface-hover: #C8D8CC;
   --border:        var(--forest-100);
   --border-focus:  var(--forest-500);
 
@@ -1431,7 +1431,7 @@ body {
   border-bottom: 0.5px solid var(--accent-light);
   position: sticky;
   top: 0;
-  background: rgba(255,255,255,0.92);
+  background: rgba(181,202,186,0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-radius: 20px 20px 0 0;
@@ -1439,6 +1439,11 @@ body {
 }
 
 .modal-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+} {
   font-family: var(--font-serif);
   font-size: 1.1rem;
   font-weight: 500;
