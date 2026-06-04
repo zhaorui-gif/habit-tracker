@@ -194,7 +194,6 @@ function renderToday() {
   updateEnergyRing();
   updateStatsRow();
   renderTodayHabits();
-  renderDiary(todayStr());
   updateMoodDisplay();
 }
 
@@ -209,8 +208,8 @@ function updateEnergyRing() {
   const ring = $('#energyRing');
   if (!ring) return;
   const c = 2 * Math.PI * 78;
-  const maxE = Math.max(getCurrentEnergy(), 100);
-  const ratio = Math.min(getCurrentEnergy() / maxE, 1);
+  const MAX_ENERGY = 500; // 一圈 = 500 能量值
+  const ratio = Math.min(getCurrentEnergy() / MAX_ENERGY, 1);
   ring.setAttribute('stroke-dasharray', c);
   ring.setAttribute('stroke-dashoffset', c * (1 - ratio));
 }
@@ -296,6 +295,7 @@ function escHtml(str) { const d=document.createElement('div'); d.textContent=str
 function renderPlans() {
   renderCalendar();
   renderPlanList(selectedPlanDate);
+  renderDiary(selectedPlanDate);
 }
 
 /* ===== Calendar ===== */
@@ -592,10 +592,9 @@ $('#btnSaveDiary').addEventListener('click', () => {
   renderCalendar();
 });
 
-// Click mood card to scroll to diary
+// Click mood card to switch to Plans tab (diary lives there now)
 $('#moodCard').addEventListener('click', () => {
-  const diarySection = document.querySelector('.diary-section');
-  if (diarySection) diarySection.scrollIntoView({ behavior: 'smooth' });
+  switchTab('plans');
 });
 
 /* ===== Calendar View Toggle ===== */

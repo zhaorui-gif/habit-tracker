@@ -2,58 +2,48 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;350;400;500&display=swap');
 
 /* ==========================================================================
-   Design System — Neo-Minimalism
-   Palette: Monochromatic warm stone + muted sage accent
-   Typography: Serif headings + Sans body, card-based layered layout
+   Design System — Deep Forest Green Monochrome
+   #122F0B  深墨绿 → 点缀 accent
+   #275F3E  苍翠绿 → 大面积底色
+   #44785B  雾中绿 → 中和深浅
+   #6F9D87  浅苔绿 → 辅助色
+   #B5CABA  雾霭绿 → 提亮色
    Philosophy: Approachable sophistication
    ========================================================================== */
 
 :root {
-  /* ── Monochromatic Stone ── */
-  --stone-50:  #F8F7F4;
-  --stone-100: #F1EFEB;
-  --stone-200: #E8E5E0;
-  --stone-300: #D9D5CF;
-  --stone-400: #B8B4AD;
-  --stone-500: #969189;
-  --stone-600: #736E66;
-  --stone-700: #4F4B45;
-  --stone-800: #33312C;
-  --stone-900: #1E1D19;
-
-  /* ── Muted Sage Accent (single hue, monochromatic accent) ── */
-  --sage-100: #EDF1ED;
-  --sage-200: #DCE4DD;
-  --sage-300: #BCCABE;
-  --sage-400: #9AAE9C;
-  --sage-500: #7D9480;
-  --sage-600: #647A67;
-  --sage-700: #4E6151;
+  /* ── Forest Green Palette ── */
+  --forest-900: #122F0B;
+  --forest-700: #275F3E;
+  --forest-500: #44785B;
+  --forest-300: #6F9D87;
+  --forest-100: #B5CABA;
 
   /* ── Semantic Tokens ── */
-  --bg:            var(--stone-50);
-  --bg-elevated:   var(--stone-100);
+  --bg:            var(--forest-700);
+  --bg-elevated:   #1F4D32;
   --surface:       #FFFFFF;
-  --surface-hover: var(--stone-50);
-  --border:        var(--stone-200);
-  --border-focus:  var(--sage-400);
+  --surface-hover: #F2F6F3;
+  --border:        var(--forest-100);
+  --border-focus:  var(--forest-500);
 
-  --text-primary:   var(--stone-800);
-  --text-secondary: var(--stone-600);
-  --text-tertiary:  var(--stone-400);
+  --text-primary:   var(--forest-900);
+  --text-secondary: var(--forest-500);
+  --text-tertiary:  var(--forest-300);
   --text-on-accent: #FFFFFF;
+  --text-on-dark:   #E8F0EB;
 
-  --accent:        var(--sage-500);
-  --accent-hover:  var(--sage-600);
-  --accent-light:  var(--sage-100);
-  --accent-subtle: var(--sage-200);
+  --accent:        var(--forest-900);
+  --accent-hover:  #0B1F07;
+  --accent-light:  #E8F0EB;
+  --accent-subtle: var(--forest-100);
 
-  /* ── Elevation (layered card system) ── */
+  /* ── Elevation (darker bg = deeper shadows) ── */
   --elevation-0:  0 0 0 0 transparent;
-  --elevation-1:  0 1px 2px rgba(51,49,44,0.03), 0 1px 4px rgba(51,49,44,0.02);
-  --elevation-2:  0 2px 6px rgba(51,49,44,0.04), 0 1px 3px rgba(51,49,44,0.03);
-  --elevation-3:  0 4px 14px rgba(51,49,44,0.05), 0 2px 6px rgba(51,49,44,0.03);
-  --elevation-4:  0 8px 26px rgba(51,49,44,0.07), 0 3px 10px rgba(51,49,44,0.04);
+  --elevation-1:  0 2px 4px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --elevation-2:  0 4px 10px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+  --elevation-3:  0 6px 18px rgba(0,0,0,0.12), 0 3px 8px rgba(0,0,0,0.08);
+  --elevation-4:  0 12px 32px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.10);
 
   /* ── Radius ── */
   --radius-xs: 4px;
@@ -88,7 +78,7 @@ html {
 body {
   font-family: var(--font-sans);
   font-weight: 350;
-  background: var(--stone-200);
+  background: var(--forest-900);
   color: var(--text-primary);
   display: flex;
   justify-content: center;
@@ -112,7 +102,7 @@ body {
   position: relative;
   overflow-x: hidden;
   padding-bottom: var(--nav-height);
-  box-shadow: 0 0 60px rgba(51,49,44,0.08);
+  box-shadow: 0 0 80px rgba(0,0,0,0.3);
 }
 
 /* ==========================================================================
@@ -134,7 +124,7 @@ body {
 }
 
 /* ==========================================================================
-   Header — glass-morphism, refined
+   Header — glass on dark green
    ========================================================================== */
 
 .header {
@@ -145,7 +135,7 @@ body {
   width: 100%;
   max-width: 430px;
   height: var(--header-h);
-  background: rgba(248,247,244,0.78);
+  background: rgba(39,95,62,0.82);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   display: flex;
@@ -153,14 +143,14 @@ body {
   justify-content: space-between;
   padding: 0 var(--content-px);
   z-index: 100;
-  border-bottom: 0.5px solid rgba(51,49,44,0.06);
+  border-bottom: 0.5px solid rgba(181,202,186,0.15);
 }
 
 .header h1 {
   font-family: var(--font-serif);
   font-size: 1.25rem;
   font-weight: 500;
-  color: var(--stone-800);
+  color: var(--text-on-dark);
   letter-spacing: 0.01em;
 }
 
@@ -170,13 +160,13 @@ body {
   font-family: var(--font-serif);
   font-size: 1.25rem;
   font-weight: 500;
-  color: var(--stone-800);
+  color: var(--text-on-dark);
   letter-spacing: 0.01em;
 }
 
 .date-text {
   font-size: 0.72rem;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
   font-weight: 350;
   margin-top: 2px;
   letter-spacing: 0.02em;
@@ -186,17 +176,17 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: var(--stone-800);
+  background: rgba(255,255,255,0.15);
   padding: 6px 16px;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--stone-100);
+  color: var(--text-on-dark);
   letter-spacing: 0.02em;
 }
 
 /* ==========================================================================
-   Energy Ring — minimal, monochrome
+   Energy Ring — on dark bg
    ========================================================================== */
 
 .energy-ring-container {
@@ -217,13 +207,14 @@ body {
 
 .ring-bg {
   fill: none;
-  stroke: var(--stone-200);
+  stroke: var(--forest-500);
   stroke-width: 5;
+  opacity: 0.4;
 }
 
 .ring-progress {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--forest-100);
   stroke-width: 5;
   stroke-linecap: round;
   transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -245,22 +236,21 @@ body {
   font-family: var(--font-serif);
   font-size: 2.6rem;
   font-weight: 500;
-  color: var(--stone-800);
+  color: var(--text-on-dark);
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
 .energy-ring-label {
   font-size: 0.7rem;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
   font-weight: 350;
   margin-top: 4px;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 /* ==========================================================================
-   Stats Row — card-based layered
+   Stats Row
    ========================================================================== */
 
 .stats-row {
@@ -271,12 +261,12 @@ body {
 }
 
 .stat-card {
-  background: var(--surface);
+  background: rgba(255,255,255,0.1);
   border-radius: var(--radius-md);
   padding: 14px 10px;
   text-align: center;
-  box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  box-shadow: none;
+  border: 0.5px solid rgba(181,202,186,0.12);
   transition: box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
@@ -286,13 +276,13 @@ body {
 }
 
 .stat-card:active {
-  box-shadow: var(--elevation-2);
+  background: rgba(255,255,255,0.15);
 }
 
 .stat-value {
   font-family: var(--font-serif);
   font-size: 1.25rem;
-  color: var(--stone-800);
+  color: var(--text-on-dark);
   font-weight: 500;
   display: block;
   line-height: 1.2;
@@ -302,13 +292,13 @@ body {
 
 .stat-label {
   font-size: 0.68rem;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
   font-weight: 350;
   letter-spacing: 0.03em;
   line-height: 1;
 }
 
-/* Mood card — clickable, shows SVG */
+/* Mood card */
 .stat-card-mood {
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -316,7 +306,7 @@ body {
 }
 
 .stat-card-mood:active {
-  box-shadow: var(--elevation-3);
+  background: rgba(255,255,255,0.2);
   transform: scale(0.96);
 }
 
@@ -326,6 +316,7 @@ body {
   display: block;
   margin: 0 auto 4px;
   transition: transform 0.3s ease;
+  filter: brightness(1.2);
 }
 
 .stat-card-mood:active .mood-display {
@@ -337,55 +328,7 @@ body {
 }
 
 /* ==========================================================================
-   Mood Picker — emoji grid in diary
-   ========================================================================== */
-
-.mood-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding: 10px 12px;
-  background: var(--surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.04);
-  justify-content: center;
-}
-
-.mood-option {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
-  background: transparent;
-  padding: 4px;
-}
-
-.mood-option img {
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.mood-option:active {
-  transform: scale(0.85);
-}
-
-.mood-option.selected {
-  border-color: var(--stone-800);
-  background: var(--stone-50);
-  box-shadow: var(--elevation-1);
-  transform: scale(1.1);
-}
-
-/* ==========================================================================
-   Section — breathing room
+   Section
    ========================================================================== */
 
 .section { margin-bottom: 26px; }
@@ -401,19 +344,19 @@ body {
   font-family: var(--font-serif);
   font-size: 1rem;
   font-weight: 500;
-  color: var(--stone-700);
+  color: var(--text-on-dark);
   letter-spacing: 0.015em;
 }
 
 .section-badge {
   font-size: 0.7rem;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
   font-weight: 400;
   letter-spacing: 0.02em;
 }
 
 /* ==========================================================================
-   Habit List — layered cards with elevation
+   Habit List
    ========================================================================== */
 
 .habit-list {
@@ -430,7 +373,7 @@ body {
   align-items: center;
   gap: 12px;
   box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.3);
   transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
   cursor: pointer;
   -webkit-user-select: none;
@@ -439,13 +382,12 @@ body {
 
 .habit-item:active {
   transform: scale(0.985);
-  box-shadow: var(--elevation-3);
+  box-shadow: var(--elevation-2);
 }
 
 .habit-item.completed {
-  opacity: 0.5;
-  box-shadow: var(--elevation-0);
-  border-color: rgba(51,49,44,0.02);
+  opacity: 0.55;
+  box-shadow: none;
 }
 
 .habit-item.completed .habit-name {
@@ -457,7 +399,7 @@ body {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 1.5px solid var(--stone-300);
+  border: 1.5px solid var(--forest-300);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -468,8 +410,8 @@ body {
 }
 
 .habit-item.completed .habit-check {
-  border-color: var(--accent);
-  background: var(--accent);
+  border-color: var(--forest-900);
+  background: var(--forest-900);
   color: white;
 }
 
@@ -480,7 +422,7 @@ body {
 .habit-name {
   font-size: 0.9rem;
   font-weight: 400;
-  color: var(--stone-800);
+  color: var(--text-primary);
   transition: all 0.2s ease;
 }
 
@@ -494,7 +436,7 @@ body {
 .habit-energy-badge {
   font-size: 0.73rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--forest-500);
   flex-shrink: 0;
   letter-spacing: 0.01em;
 }
@@ -507,7 +449,7 @@ body {
   position: fixed;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--forest-100);
   pointer-events: none;
   z-index: 1000;
   animation: floatUp 1.1s ease-out forwards;
@@ -525,7 +467,8 @@ body {
 .empty-state {
   text-align: center;
   padding: 32px 16px;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
+  opacity: 0.6;
 }
 
 .empty-state.small { padding: 18px; }
@@ -534,7 +477,7 @@ body {
   font-size: 1.6rem;
   display: block;
   margin-bottom: 8px;
-  opacity: 0.35;
+  opacity: 0.3;
 }
 
 .empty-state p {
@@ -562,18 +505,18 @@ body {
 .btn:active { transform: scale(0.96); }
 
 .btn-primary {
-  background: var(--stone-800);
-  color: var(--stone-100);
+  background: var(--forest-900);
+  color: white;
 }
 
-.btn-primary:active { background: var(--stone-900); }
+.btn-primary:active { background: var(--accent-hover); }
 
 .btn-secondary {
-  background: var(--stone-100);
-  color: var(--stone-700);
+  background: var(--accent-light);
+  color: var(--forest-900);
 }
 
-.btn-secondary:active { background: var(--stone-200); }
+.btn-secondary:active { background: var(--forest-100); }
 
 .btn-danger {
   width: 100%;
@@ -594,22 +537,19 @@ body {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 0.5px solid var(--stone-300);
-  background: var(--surface);
-  color: var(--stone-600);
+  border: 0.5px solid rgba(181,202,186,0.3);
+  background: rgba(255,255,255,0.12);
+  color: var(--text-on-dark);
   font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  box-shadow: var(--elevation-1);
 }
 
 .btn-icon:active {
-  background: var(--stone-100);
-  border-color: var(--stone-400);
-  box-shadow: var(--elevation-2);
+  background: rgba(255,255,255,0.22);
 }
 
 .btn-icon.small {
@@ -623,8 +563,8 @@ body {
   height: 28px;
   border-radius: 50%;
   border: none;
-  background: var(--stone-100);
-  color: var(--stone-500);
+  background: var(--accent-light);
+  color: var(--forest-500);
   font-size: 0.75rem;
   cursor: pointer;
   display: flex;
@@ -633,10 +573,10 @@ body {
   transition: all 0.15s ease;
 }
 
-.btn-close:active { background: var(--stone-200); color: var(--stone-700); }
+.btn-close:active { background: var(--forest-100); color: var(--forest-900); }
 
 /* ==========================================================================
-   Bottom Navigation — minimal, refined
+   Bottom Navigation — dark glass
    ========================================================================== */
 
 .bottom-nav {
@@ -647,13 +587,13 @@ body {
   width: 100%;
   max-width: 430px;
   height: var(--nav-height);
-  background: rgba(248,247,244,0.82);
+  background: rgba(31,77,50,0.88);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   display: flex;
   align-items: center;
   justify-content: space-around;
-  border-top: 0.5px solid rgba(51,49,44,0.06);
+  border-top: 0.5px solid rgba(181,202,186,0.12);
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -667,7 +607,6 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
-  position: relative;
 }
 
 .nav-icon-svg {
@@ -675,10 +614,11 @@ body {
   height: 26px;
   opacity: 0.35;
   transition: all 0.25s ease;
+  filter: brightness(0) invert(1);
 }
 
 .nav-item.active .nav-icon-svg {
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .nav-item:active .nav-icon-svg {
@@ -691,10 +631,9 @@ body {
 
 .calendar-view-toggle {
   display: flex;
-  background: var(--stone-100);
+  background: rgba(255,255,255,0.1);
   border-radius: 18px;
   padding: 3px;
-  box-shadow: var(--elevation-0);
 }
 
 .toggle-option {
@@ -705,7 +644,7 @@ body {
   cursor: pointer;
   border: none;
   background: transparent;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
   transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
   font-family: var(--font-sans);
   letter-spacing: 0.02em;
@@ -713,7 +652,7 @@ body {
 
 .toggle-option.active {
   background: var(--surface);
-  color: var(--stone-800);
+  color: var(--forest-900);
   font-weight: 500;
   box-shadow: var(--elevation-1);
 }
@@ -742,38 +681,18 @@ body {
   min-width: 44px;
   padding: 10px 4px 8px;
   border-radius: var(--radius-md);
-  background: var(--surface);
+  background: rgba(255,255,255,0.1);
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
   flex-shrink: 0;
-  box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.03);
+  border: 0.5px solid rgba(181,202,186,0.1);
 }
 
 .calendar-day:active { transform: scale(0.94); }
 
-.calendar-day.today {
-  background: var(--stone-800);
-  box-shadow: var(--elevation-2);
-  border-color: transparent;
-}
-
-.calendar-day.today .cal-day,
-.calendar-day.today .cal-date { color: var(--stone-100); }
-
-.calendar-day.today .cal-dot { background: var(--stone-100); }
-
-.calendar-day.selected {
-  box-shadow: inset 0 0 0 2px var(--stone-800);
-}
-
-.calendar-day.today.selected {
-  box-shadow: inset 0 0 0 2px var(--stone-100);
-}
-
 .calendar-day .cal-day {
   font-size: 0.6rem;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
   font-weight: 400;
   letter-spacing: 0.03em;
 }
@@ -781,20 +700,38 @@ body {
 .calendar-day .cal-date {
   font-family: var(--font-serif);
   font-size: 0.9rem;
-  color: var(--stone-700);
+  color: var(--text-on-dark);
   font-weight: 500;
+}
+
+.calendar-day.today {
+  background: var(--surface);
+  border-color: transparent;
+  box-shadow: var(--elevation-1);
+}
+
+.calendar-day.today .cal-day { color: var(--forest-500); }
+.calendar-day.today .cal-date { color: var(--forest-900); }
+
+.calendar-day.selected {
+  box-shadow: inset 0 0 0 2px var(--forest-900);
+}
+
+.calendar-day.today.selected {
+  box-shadow: inset 0 0 0 2px var(--forest-900);
 }
 
 .calendar-day .cal-dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--forest-100);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
 .calendar-day.has-plans .cal-dot { opacity: 1; }
+.calendar-day.today .cal-dot { background: var(--forest-900); }
 
 /* ==========================================================================
    Month Calendar Grid
@@ -806,7 +743,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 16px 12px 12px;
   box-shadow: var(--elevation-2);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.3);
   margin-bottom: 16px;
 }
 
@@ -840,7 +777,7 @@ body {
   border-radius: 50%;
   cursor: pointer;
   font-size: 0.78rem;
-  color: var(--stone-700);
+  color: var(--text-primary);
   font-weight: 400;
   transition: all 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
   position: relative;
@@ -849,35 +786,35 @@ body {
 .calendar-cell:active { transform: scale(0.9); }
 
 .calendar-cell.other-month {
-  color: var(--stone-300);
+  color: var(--forest-100);
 }
 
 .calendar-cell.today {
-  background: var(--stone-800);
-  color: var(--stone-100);
+  background: var(--forest-900);
+  color: white;
   font-weight: 500;
 }
 
 .calendar-cell.selected {
-  box-shadow: inset 0 0 0 2px var(--stone-800);
+  box-shadow: inset 0 0 0 2px var(--forest-900);
 }
 
 .calendar-cell.today.selected {
-  box-shadow: inset 0 0 0 2px var(--stone-300);
+  box-shadow: inset 0 0 0 2px var(--forest-300);
 }
 
 .calendar-cell .cell-dot {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--forest-500);
   position: absolute;
   bottom: 3px;
   opacity: 0;
 }
 
 .calendar-cell.has-plans .cell-dot { opacity: 1; }
-.calendar-cell.today .cell-dot { background: var(--stone-100); }
+.calendar-cell.today .cell-dot { background: white; }
 
 /* ==========================================================================
    Plan List
@@ -893,13 +830,13 @@ body {
   align-items: flex-start;
   gap: 12px;
   box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.3);
   transition: all 0.2s ease;
 }
 
 .plan-time {
   font-size: 0.72rem;
-  color: var(--accent);
+  color: var(--forest-500);
   font-weight: 500;
   flex-shrink: 0;
   min-width: 42px;
@@ -911,7 +848,7 @@ body {
 .plan-title {
   font-size: 0.88rem;
   font-weight: 400;
-  color: var(--stone-800);
+  color: var(--text-primary);
 }
 
 .plan-desc {
@@ -931,7 +868,7 @@ body {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1.5px solid var(--stone-300);
+  border: 1.5px solid var(--forest-300);
   flex-shrink: 0;
   cursor: pointer;
   background: transparent;
@@ -939,14 +876,14 @@ body {
 }
 
 .plan-item.completed .plan-check-btn {
-  border-color: var(--accent);
-  background: var(--accent);
+  border-color: var(--forest-900);
+  background: var(--forest-900);
 }
 
 .plan-delete {
   background: none;
   border: none;
-  color: var(--stone-300);
+  color: var(--forest-300);
   cursor: pointer;
   font-size: 0.8rem;
   flex-shrink: 0;
@@ -957,7 +894,7 @@ body {
 .plan-delete:active { color: #B0504A; }
 
 /* ==========================================================================
-   Diary — layered editorial feel
+   Diary
    ========================================================================== */
 
 .diary-section { margin-top: 4px; }
@@ -966,7 +903,7 @@ body {
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--elevation-2);
-  border: 0.5px solid rgba(51,49,44,0.05);
+  border: 0.5px solid rgba(181,202,186,0.3);
   overflow: hidden;
 }
 
@@ -977,7 +914,7 @@ body {
   font-size: 0.85rem;
   font-family: var(--font-serif);
   font-weight: 400;
-  color: var(--stone-800);
+  color: var(--text-primary);
   background: transparent;
   resize: vertical;
   min-height: 110px;
@@ -987,7 +924,7 @@ body {
 }
 
 .diary-editor-wrap textarea::placeholder {
-  color: var(--stone-300);
+  color: var(--forest-300);
   font-weight: 400;
   font-style: italic;
 }
@@ -997,8 +934,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 10px 16px;
-  border-top: 0.5px solid var(--stone-100);
-  background: var(--stone-50);
+  border-top: 0.5px solid var(--accent-light);
+  background: var(--surface-hover);
 }
 
 .diary-word-count {
@@ -1009,8 +946,8 @@ body {
 }
 
 .btn-diary-save {
-  background: var(--stone-800);
-  color: var(--stone-100);
+  background: var(--forest-900);
+  color: white;
   border: none;
   padding: 7px 20px;
   border-radius: 18px;
@@ -1022,7 +959,7 @@ body {
   letter-spacing: 0.02em;
 }
 
-.btn-diary-save:active { transform: scale(0.95); background: var(--stone-900); }
+.btn-diary-save:active { transform: scale(0.95); background: var(--accent-hover); }
 
 .diary-list {
   margin-top: 12px;
@@ -1035,21 +972,21 @@ body {
   background: var(--surface);
   border-radius: var(--radius-md);
   padding: 14px 16px;
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.3);
   box-shadow: var(--elevation-1);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .diary-entry:active {
-  box-shadow: var(--elevation-3);
+  box-shadow: var(--elevation-2);
   transform: scale(0.99);
 }
 
 .diary-entry .diary-entry-date {
   font-family: var(--font-serif);
   font-size: 0.7rem;
-  color: var(--accent);
+  color: var(--forest-500);
   font-weight: 500;
   margin-bottom: 5px;
   letter-spacing: 0.02em;
@@ -1057,7 +994,7 @@ body {
 
 .diary-entry .diary-entry-text {
   font-size: 0.83rem;
-  color: var(--stone-700);
+  color: var(--text-secondary);
   font-weight: 350;
   line-height: 1.7;
   white-space: pre-wrap;
@@ -1065,7 +1002,55 @@ body {
 }
 
 /* ==========================================================================
-   Reward Energy Bar — elevated card
+   Mood Picker
+   ========================================================================== */
+
+.mood-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-1);
+  border: 0.5px solid rgba(181,202,186,0.3);
+  justify-content: center;
+}
+
+.mood-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  background: transparent;
+  padding: 4px;
+}
+
+.mood-option img {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mood-option:active {
+  transform: scale(0.85);
+}
+
+.mood-option.selected {
+  border-color: var(--forest-900);
+  background: var(--accent-light);
+  box-shadow: var(--elevation-1);
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   Reward Energy Bar
    ========================================================================== */
 
 .reward-energy-bar {
@@ -1073,7 +1058,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 18px 18px 14px;
   box-shadow: var(--elevation-2);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.3);
   margin-bottom: 20px;
 }
 
@@ -1094,13 +1079,13 @@ body {
 .reward-energy-amount {
   font-family: var(--font-serif);
   font-size: 1.4rem;
-  color: var(--stone-800);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .reward-energy-track {
   height: 5px;
-  background: var(--stone-100);
+  background: var(--accent-light);
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 10px;
@@ -1108,7 +1093,7 @@ body {
 
 .reward-energy-fill {
   height: 100%;
-  background: var(--accent);
+  background: var(--forest-500);
   border-radius: 3px;
   transition: width 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -1123,12 +1108,12 @@ body {
 }
 
 .reward-energy-meta strong {
-  color: var(--stone-700);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 /* ==========================================================================
-   Reward Grid — card grid
+   Reward Grid
    ========================================================================== */
 
 .reward-grid {
@@ -1143,7 +1128,7 @@ body {
   padding: 18px 14px 16px;
   text-align: center;
   box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1162,7 +1147,7 @@ body {
 .reward-card .reward-name {
   font-size: 0.85rem;
   font-weight: 400;
-  color: var(--stone-800);
+  color: var(--text-primary);
   letter-spacing: 0.01em;
 }
 
@@ -1176,7 +1161,7 @@ body {
 .reward-card .reward-cost {
   font-size: 0.74rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--forest-500);
   letter-spacing: 0.02em;
 }
 
@@ -1189,8 +1174,8 @@ body {
   font-size: 0.78rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: var(--stone-800);
-  color: var(--stone-100);
+  background: var(--forest-900);
+  color: white;
   font-family: var(--font-sans);
   letter-spacing: 0.015em;
   box-shadow: var(--elevation-1);
@@ -1199,15 +1184,14 @@ body {
 .reward-card .btn-redeem:active { transform: scale(0.95); }
 
 .reward-card .btn-redeem:disabled {
-  background: var(--stone-100);
-  color: var(--stone-400);
+  background: var(--accent-light);
+  color: var(--forest-300);
   box-shadow: none;
   cursor: not-allowed;
 }
 
 .reward-card .btn-redeem:disabled:active { transform: none; }
 
-/* Edit button */
 .reward-edit-btn {
   position: absolute;
   top: 10px;
@@ -1215,22 +1199,22 @@ body {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 0.5px solid var(--stone-200);
+  border: 0.5px solid var(--forest-100);
   background: var(--surface);
   font-size: 0.65rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--stone-400);
+  color: var(--forest-500);
   transition: all 0.15s ease;
   box-shadow: var(--elevation-1);
 }
 
 .reward-edit-btn:active {
-  background: var(--stone-100);
-  color: var(--stone-700);
-  border-color: var(--stone-400);
+  background: var(--accent-light);
+  color: var(--forest-900);
+  border-color: var(--forest-500);
 }
 
 /* ==========================================================================
@@ -1246,7 +1230,7 @@ body {
   padding: 10px 14px;
   background: var(--surface);
   border-radius: var(--radius-sm);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.3);
   font-size: 0.8rem;
   font-weight: 350;
   box-shadow: var(--elevation-1);
@@ -1256,7 +1240,7 @@ body {
 
 .redeem-item .redeem-info { flex: 1; }
 
-.redeem-item .redeem-name { font-weight: 400; font-size: 0.8rem; color: var(--stone-700); }
+.redeem-item .redeem-name { font-weight: 400; font-size: 0.8rem; color: var(--text-secondary); }
 
 .redeem-item .redeem-date { font-size: 0.66rem; color: var(--text-tertiary); }
 
@@ -1274,25 +1258,24 @@ body {
 }
 
 .profile-stat {
-  background: var(--surface);
+  background: rgba(255,255,255,0.1);
   border-radius: var(--radius-md);
   padding: 18px 8px 16px;
   text-align: center;
-  box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.12);
 }
 
 .profile-stat-val {
   font-family: var(--font-serif);
   font-size: 1.5rem;
-  color: var(--stone-800);
+  color: var(--text-on-dark);
   font-weight: 500;
   display: block;
 }
 
 .profile-stat-lbl {
   font-size: 0.66rem;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
   font-weight: 350;
   margin-top: 4px;
   letter-spacing: 0.03em;
@@ -1305,20 +1288,19 @@ body {
 .habit-manage-list { display: flex; flex-direction: column; gap: 6px; }
 
 .habit-manage-item {
-  background: var(--surface);
+  background: rgba(255,255,255,0.1);
   border-radius: var(--radius-md);
   padding: 13px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.12);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .habit-manage-item:active {
-  box-shadow: var(--elevation-2);
+  background: rgba(255,255,255,0.18);
   transform: scale(0.99);
 }
 
@@ -1326,18 +1308,18 @@ body {
 
 .habit-manage-item .hm-info { flex: 1; min-width: 0; }
 
-.habit-manage-item .hm-name { font-weight: 400; font-size: 0.86rem; color: var(--stone-800); }
+.habit-manage-item .hm-name { font-weight: 400; font-size: 0.86rem; color: var(--text-on-dark); }
 
 .habit-manage-item .hm-meta {
   font-size: 0.68rem;
-  color: var(--text-tertiary);
+  color: var(--forest-100);
   font-weight: 350;
 }
 
 .habit-manage-item .hm-energy {
   font-size: 0.72rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--forest-100);
 }
 
 .habit-manage-item .hm-delete {
@@ -1346,11 +1328,11 @@ body {
   font-size: 0.85rem;
   cursor: pointer;
   padding: 4px;
-  color: var(--stone-300);
+  color: rgba(255,255,255,0.3);
   transition: color 0.15s ease;
 }
 
-.habit-manage-item .hm-delete:active { color: #B0504A; }
+.habit-manage-item .hm-delete:active { color: #E08070; }
 
 /* ==========================================================================
    Energy Chart
@@ -1366,7 +1348,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 18px 14px 12px;
   box-shadow: var(--elevation-1);
-  border: 0.5px solid rgba(51,49,44,0.04);
+  border: 0.5px solid rgba(181,202,186,0.3);
 }
 
 .chart-bar-wrap {
@@ -1382,7 +1364,7 @@ body {
 .chart-bar {
   width: 100%;
   max-width: 34px;
-  background: var(--accent);
+  background: var(--forest-500);
   border-radius: 3px 3px 0 0;
   transition: height 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
   min-height: 3px;
@@ -1400,7 +1382,7 @@ body {
 .chart-value {
   font-size: 0.64rem;
   font-weight: 500;
-  color: var(--stone-700);
+  color: var(--text-secondary);
 }
 
 /* ==========================================================================
@@ -1410,7 +1392,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(30,29,25,0.35);
+  background: rgba(18,47,11,0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 200;
@@ -1431,7 +1413,7 @@ body {
   overflow-y: auto;
   animation: slideUp 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
   padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -4px 30px rgba(51,49,44,0.12);
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.25);
 }
 
 .modal-sm { max-height: fit-content; text-align: center; }
@@ -1446,7 +1428,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px 12px;
-  border-bottom: 0.5px solid var(--stone-100);
+  border-bottom: 0.5px solid var(--accent-light);
   position: sticky;
   top: 0;
   background: rgba(255,255,255,0.92);
@@ -1460,7 +1442,7 @@ body {
   font-family: var(--font-serif);
   font-size: 1.1rem;
   font-weight: 500;
-  color: var(--stone-800);
+  color: var(--text-primary);
 }
 
 .modal-body { padding: 16px 20px; }
@@ -1473,7 +1455,6 @@ body {
 
 .modal-footer .btn { flex: 1; }
 
-/* Delete reward in modal */
 .btn-delete-reward {
   background: none;
   border: none;
@@ -1500,7 +1481,7 @@ body {
   display: block;
   font-size: 0.74rem;
   font-weight: 500;
-  color: var(--stone-600);
+  color: var(--text-secondary);
   margin-bottom: 6px;
   letter-spacing: 0.015em;
 }
@@ -1512,13 +1493,13 @@ body {
 .form-group textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 0.5px solid var(--stone-200);
+  border: 0.5px solid var(--forest-100);
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   font-family: var(--font-sans);
   font-weight: 350;
-  background: var(--stone-50);
-  color: var(--stone-800);
+  background: var(--surface-hover);
+  color: var(--text-primary);
   transition: all 0.2s ease;
   -webkit-appearance: none;
   letter-spacing: 0.01em;
@@ -1528,23 +1509,20 @@ body {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--stone-400);
+  border-color: var(--forest-500);
   background: var(--surface);
-  box-shadow: 0 0 0 3px rgba(125,148,128,0.08);
+  box-shadow: 0 0 0 3px rgba(68,120,91,0.1);
 }
 
 .form-group textarea { resize: vertical; }
 
-.form-group input[type="range"] {
-  width: 100%;
-  accent-color: var(--stone-700);
-}
+.form-group input[type="range"] { width: 100%; accent-color: var(--forest-900); }
 
 .range-label {
   display: inline-block;
   margin-top: 4px;
   font-size: 0.8rem;
-  color: var(--accent);
+  color: var(--forest-500);
   font-weight: 500;
 }
 
@@ -1562,7 +1540,7 @@ body {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  border: 0.5px solid var(--stone-200);
+  border: 0.5px solid var(--forest-100);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1575,17 +1553,13 @@ body {
 .icon-picker .icon-option:active { transform: scale(0.88); }
 
 .icon-picker .icon-option.selected {
-  border-color: var(--stone-800);
-  background: var(--stone-50);
+  border-color: var(--forest-900);
+  background: var(--accent-light);
   transform: scale(1.06);
   box-shadow: var(--elevation-1);
 }
 
-.icon-picker.small .icon-option {
-  width: 34px;
-  height: 34px;
-  font-size: 1rem;
-}
+.icon-picker.small .icon-option { width: 34px; height: 34px; font-size: 1rem; }
 
 /* ==========================================================================
    Weekday Picker
@@ -1597,7 +1571,7 @@ body {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 0.5px solid var(--stone-200);
+  border: 0.5px solid var(--forest-100);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1606,15 +1580,15 @@ body {
   cursor: pointer;
   background: var(--surface);
   transition: all 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
-  color: var(--stone-500);
+  color: var(--forest-500);
 }
 
 .weekday-picker .wd-option:active { transform: scale(0.88); }
 
 .weekday-picker .wd-option.selected {
-  border-color: var(--stone-800);
-  background: var(--stone-800);
-  color: var(--stone-100);
+  border-color: var(--forest-900);
+  background: var(--forest-900);
+  color: white;
   box-shadow: var(--elevation-1);
 }
 
@@ -1631,16 +1605,13 @@ body {
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(30,29,25,0.4);
+  background: rgba(18,47,11,0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   pointer-events: none;
 }
 
-.redeem-toast.active {
-  display: flex;
-  animation: toastIn 0.3s ease;
-}
+.redeem-toast.active { display: flex; animation: toastIn 0.3s ease; }
 
 @keyframes toastIn {
   from { opacity: 0; }
@@ -1666,13 +1637,13 @@ body {
 .redeem-toast-title {
   font-family: var(--font-serif);
   font-size: 1.2rem;
-  color: var(--stone-800);
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .redeem-toast-energy {
   font-size: 0.88rem;
-  color: var(--stone-600);
+  color: var(--text-secondary);
   font-weight: 400;
 }
 
@@ -1682,7 +1653,7 @@ body {
 
 @media (min-width: 431px) {
   .app-container {
-    border-left: 0.5px solid rgba(51,49,44,0.04);
-    border-right: 0.5px solid rgba(51,49,44,0.04);
+    border-left: 0.5px solid rgba(181,202,186,0.12);
+    border-right: 0.5px solid rgba(181,202,186,0.12);
   }
 }
