@@ -99,7 +99,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   background:
-    linear-gradient(rgba(15,38,22,0.94), rgba(10,30,18,0.96)),
+    linear-gradient(rgba(24,60,40,0.88), rgba(18,42,28,0.90)),
     url('bg-forest.jpg') center / cover no-repeat fixed;
   position: relative;
   overflow-x: hidden;
