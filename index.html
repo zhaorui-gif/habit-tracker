@@ -49,10 +49,9 @@
           <span class="stat-value" id="todayDone">0/<span id="todayTotal">0</span></span>
           <span class="stat-label">今日完成</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-icon">⊙</span>
-          <span class="stat-value" id="totalHabits">0</span>
-          <span class="stat-label">习惯总数</span>
+        <div class="stat-card stat-card-mood" id="moodCard">
+          <img class="mood-display" id="moodDisplay" src="moods/smiling.svg" alt="今日心情" />
+          <span class="stat-label">今日心情</span>
         </div>
       </div>
 
@@ -67,6 +66,23 @@
             <p>还没有习惯，去"我的"添加吧</p>
           </div>
         </div>
+      </div>
+
+      <!-- Diary Section with Mood Picker -->
+      <div class="section diary-section">
+        <div class="section-header">
+          <h2>日记</h2>
+          <span class="section-badge" id="diaryDateLabel">今天</span>
+        </div>
+        <div class="mood-picker" id="moodPicker"></div>
+        <div class="diary-editor-wrap">
+          <textarea id="diaryEditor" placeholder="记录今天的想法…"></textarea>
+          <div class="diary-toolbar">
+            <span class="diary-word-count" id="diaryWordCount">0 字</span>
+            <button class="btn-diary-save" id="btnSaveDiary">保存</button>
+          </div>
+        </div>
+        <div class="diary-list" id="diaryList"></div>
       </div>
     </div>
 
@@ -109,22 +125,6 @@
             <p>暂无计划</p>
           </div>
         </div>
-      </div>
-
-      <!-- Diary -->
-      <div class="section diary-section">
-        <div class="section-header">
-          <h2>日记</h2>
-          <span class="section-badge" id="diaryDateLabel">今天</span>
-        </div>
-        <div class="diary-editor-wrap">
-          <textarea id="diaryEditor" placeholder="记录今天的想法…"></textarea>
-          <div class="diary-toolbar">
-            <span class="diary-word-count" id="diaryWordCount">0 字</span>
-            <button class="btn-diary-save" id="btnSaveDiary">保存</button>
-          </div>
-        </div>
-        <div class="diary-list" id="diaryList"></div>
       </div>
     </div>
 

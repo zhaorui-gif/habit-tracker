@@ -49,7 +49,14 @@ function migrateData(data) {
   if (!data.redeemHistory) data.redeemHistory = [];
   if (!data.energyHistory) data.energyHistory = {};
   if (!data.diaryEntries) data.diaryEntries = {};
+  // migrate old string diary entries to {text, mood} format
+  Object.keys(data.diaryEntries).forEach(k => {
+    if (typeof data.diaryEntries[k] === 'string') {
+      data.diaryEntries[k] = { text: data.diaryEntries[k], mood: 'smiling' };
+    }
+  });
   if (!data.streakBest) data.streakBest = 0;
+  if (!data.totalHabits) data.totalHabits = 0; // deprecated, kept for migration
   return data;
 }
 
@@ -187,6 +194,8 @@ function renderToday() {
   updateEnergyRing();
   updateStatsRow();
   renderTodayHabits();
+  renderDiary(todayStr());
+  updateMoodDisplay();
 }
 
 function updateHeaderEnergy() {
@@ -215,8 +224,15 @@ function updateStatsRow() {
   if (streak > appData.streakBest) { appData.streakBest = streak; saveData(appData); }
   $('#streakDays').textContent = streak;
   $('#todayDone').innerHTML = done + '/<span id="todayTotal">' + todayHabits.length + '</span>';
-  $('#totalHabits').textContent = appData.habits.length;
   $('#todayProgress').textContent = todayHabits.length > 0 ? Math.round((done/todayHabits.length)*100) + '%' : '0%';
+}
+
+function updateMoodDisplay() {
+  const today = todayStr();
+  const entry = appData.diaryEntries[today];
+  const mood = (entry && entry.mood) ? entry.mood : 'smiling';
+  const display = $('#moodDisplay');
+  if (display) display.src = 'moods/' + mood + '.svg';
 }
 
 function renderTodayHabits() {
@@ -280,7 +296,6 @@ function escHtml(str) { const d=document.createElement('div'); d.textContent=str
 function renderPlans() {
   renderCalendar();
   renderPlanList(selectedPlanDate);
-  renderDiary(selectedPlanDate);
 }
 
 /* ===== Calendar ===== */
@@ -312,7 +327,9 @@ function renderWeekCalendar(selectedDate) {
   }
 
   container.innerHTML = dates.map(d => {
-    const has = appData.plans.some(p => p.date === d.str) || !!appData.diaryEntries[d.str];
+    const diary = appData.diaryEntries[d.str];
+    const hasDiary = diary && (typeof diary === 'string' ? diary.trim() : (diary.text || '').trim());
+    const has = appData.plans.some(p => p.date === d.str) || !!hasDiary;
     const sel = d.str === selectedDate;
     const td = d.isToday;
     return `<div class="calendar-day${td?' today':''}${sel?' selected':''}${has?' has-plans':''}" data-date="${d.str}">
@@ -404,7 +421,9 @@ function dateStr(y, m, d) {
 }
 
 function cellHtml(d, ds, otherMonth, isToday, isSelected, todayStr) {
-  const hasPlans = appData.plans.some(p => p.date === ds) || !!appData.diaryEntries[ds];
+  const diary = appData.diaryEntries[ds];
+  const hasDiary = diary && (typeof diary === 'string' ? diary.trim() : (diary.text || '').trim());
+  const hasPlans = appData.plans.some(p => p.date === ds) || !!hasDiary;
   return `<div class="calendar-cell${otherMonth?' other-month':''}${isToday?' today':''}${isSelected?' selected':''}${hasPlans?' has-plans':''}" data-date="${ds}">
     ${d}<span class="cell-dot"></span>
   </div>`;
@@ -466,6 +485,29 @@ function deletePlan(planId) {
 }
 
 /* ===== Diary ===== */
+const MOOD_LIST = ['smiling','happy-2','cheeky','flirt','flirt-1','nerd','rich','confused','yawning','tired-1','dissapointment','angry','arrogant','faint'];
+
+function renderMoodPicker(dateStr) {
+  const container = $('#moodPicker');
+  if (!container) return;
+  const entry = appData.diaryEntries[dateStr];
+  const currentMood = (entry && entry.mood) ? entry.mood : '';
+
+  container.innerHTML = MOOD_LIST.map(m => {
+    const sel = m === currentMood ? ' selected' : '';
+    return `<div class="mood-option${sel}" data-mood="${m}">
+      <img src="moods/${m}.svg" alt="${m}" />
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.mood-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      container.querySelectorAll('.mood-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+}
+
 function renderDiary(dateStr) {
   const editor = $('#diaryEditor');
   const dateLabel = $('#diaryDateLabel');
@@ -474,18 +516,25 @@ function renderDiary(dateStr) {
 
   if (dateLabel) dateLabel.textContent = dateStr === todayStr() ? '今天' : formatFullDate(dateStr);
 
+  // Render mood picker
+  renderMoodPicker(dateStr);
+
   // Load existing entry
-  const existing = appData.diaryEntries[dateStr] || '';
+  const entry = appData.diaryEntries[dateStr];
+  const existingText = (entry && entry.text) ? entry.text : '';
   if (editor) {
-    editor.value = existing;
+    editor.value = existingText;
     editor.dataset.diaryDate = dateStr;
   }
-  if (wordCount) wordCount.textContent = existing.length + ' 字';
+  if (wordCount) wordCount.textContent = existingText.length + ' 字';
 
   // Render past entries
   if (entryList) {
     const entries = Object.entries(appData.diaryEntries)
-      .filter(([d, txt]) => d !== dateStr && txt.trim())
+      .filter(([d, val]) => {
+        const txt = typeof val === 'string' ? val : (val && val.text ? val.text : '');
+        return d !== dateStr && txt.trim();
+      })
       .sort((a, b) => b[0].localeCompare(a[0]))
       .slice(0, 10);
 
@@ -494,10 +543,15 @@ function renderDiary(dateStr) {
       return;
     }
 
-    entryList.innerHTML = entries.map(([d, txt]) => {
-      const preview = txt.length > 120 ? txt.slice(0, 120) + '…' : txt;
+    entryList.innerHTML = entries.map(([d, val]) => {
+      const txt = typeof val === 'string' ? val : (val && val.text ? val.text : '');
+      const mood = (val && val.mood) ? val.mood : 'smiling';
+      const preview = txt.length > 80 ? txt.slice(0, 80) + '…' : txt;
       return `<div class="diary-entry" data-diary-date="${d}">
-        <div class="diary-entry-date">${formatFullDate(d)}</div>
+        <div class="diary-entry-date">
+          <img src="moods/${mood}.svg" style="width:20px;height:20px;vertical-align:-4px;margin-right:4px;" alt="" />
+          ${formatFullDate(d)}
+        </div>
         <div class="diary-entry-text">${escHtml(preview)}</div>
       </div>`;
     }).join('');
@@ -506,9 +560,7 @@ function renderDiary(dateStr) {
       entry.addEventListener('click', () => {
         selectedPlanDate = entry.dataset.diaryDate;
         renderPlans();
-        // Scroll to editor
-        const editorEl = $('#diaryEditor');
-        if (editorEl) editorEl.scrollIntoView({ behavior:'smooth' });
+        // Stay on Today tab — user is looking at past diaries via the list
       });
     });
   }
@@ -524,14 +576,26 @@ $('#btnSaveDiary').addEventListener('click', () => {
   if (!editor) return;
   const dateStr = editor.dataset.diaryDate || todayStr();
   const text = editor.value.trim();
-  if (text) {
-    appData.diaryEntries[dateStr] = text;
+
+  // Get selected mood
+  const selectedMood = $('#moodPicker').querySelector('.mood-option.selected');
+  const mood = selectedMood ? selectedMood.dataset.mood : 'smiling';
+
+  if (text || mood) {
+    appData.diaryEntries[dateStr] = { text, mood };
   } else {
     delete appData.diaryEntries[dateStr];
   }
   saveData(appData);
   renderDiary(dateStr);
+  updateMoodDisplay();
   renderCalendar();
+});
+
+// Click mood card to scroll to diary
+$('#moodCard').addEventListener('click', () => {
+  const diarySection = document.querySelector('.diary-section');
+  if (diarySection) diarySection.scrollIntoView({ behavior: 'smooth' });
 });
 
 /* ===== Calendar View Toggle ===== */

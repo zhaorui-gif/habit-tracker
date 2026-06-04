@@ -307,6 +307,78 @@ body {
   letter-spacing: 0.03em;
 }
 
+/* Mood card — larger, clickable, shows SVG */
+.stat-card-mood {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.stat-card-mood:active {
+  box-shadow: var(--elevation-3);
+  transform: scale(0.96);
+}
+
+.mood-display {
+  width: 42px;
+  height: 42px;
+  display: block;
+  margin: 2px auto;
+  transition: transform 0.3s ease;
+}
+
+.stat-card-mood:active .mood-display {
+  transform: scale(1.15);
+}
+
+/* ==========================================================================
+   Mood Picker — emoji grid in diary
+   ========================================================================== */
+
+.mood-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-1);
+  border: 0.5px solid rgba(51,49,44,0.04);
+  justify-content: center;
+}
+
+.mood-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  background: transparent;
+  padding: 4px;
+}
+
+.mood-option img {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mood-option:active {
+  transform: scale(0.85);
+}
+
+.mood-option.selected {
+  border-color: var(--stone-800);
+  background: var(--stone-50);
+  box-shadow: var(--elevation-1);
+  transform: scale(1.1);
+}
+
 /* ==========================================================================
    Section — breathing room
    ========================================================================== */
