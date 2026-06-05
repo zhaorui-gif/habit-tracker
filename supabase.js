@@ -3,8 +3,8 @@
    ============================================================ */
 
 // ---- 配置（创建 Supabase 项目后填入）----
-const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const SUPABASE_URL = 'https://vxpzcckvpkjbcfsvvdtq.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_wDgy6czO_Sxy5_QhEon1XQ_yeB3V748';
 
 // ---- Client ----
 let _supabase = null;
