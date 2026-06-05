@@ -1,30 +1,57 @@
 /* ============================================================
    Supabase Client + Auth — 能量打卡
+   SDK 在后台异步加载，不阻塞页面
    ============================================================ */
 
-// ---- 配置（创建 Supabase 项目后填入）----
+// ---- 配置 ----
 const SUPABASE_URL = 'https://vxpzcckvpkjbcfsvvdtq.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_wDgy6czO_Sxy5_QhEon1XQ_yeB3V748';
 
-// ---- Client ----
+// ---- 异步加载 Supabase SDK ----
 let _supabase = null;
+let _supabaseLoading = false;
+let _supabaseReady = false;
+let _supabaseLoadPromise = null;
+
+function loadSupabaseSDK() {
+  if (_supabaseReady) return Promise.resolve();
+  if (_supabaseLoadPromise) return _supabaseLoadPromise;
+
+  _supabaseLoadPromise = new Promise((resolve) => {
+    // 如果已经加载了
+    if (typeof supabase !== 'undefined' && supabase.createClient) {
+      _supabaseReady = true;
+      resolve();
+      return;
+    }
+    // 后台异步加载
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    script.onload = () => { _supabaseReady = true; resolve(); };
+    script.onerror = () => { console.warn('Supabase SDK 加载失败，仅本地模式可用'); resolve(); };
+    document.head.appendChild(script);
+  });
+  return _supabaseLoadPromise;
+}
 
 function getSupabase() {
-  if (!_supabase) {
-    if (typeof supabase === 'undefined') {
-      console.error('Supabase SDK 未加载，请检查 CDN 引用');
-      return null;
-    }
+  if (!_supabase && _supabaseReady && typeof supabase !== 'undefined') {
     _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
   return _supabase;
+}
+
+// 页面加载后立即开始后台加载 SDK
+if (typeof document !== 'undefined') {
+  loadSupabaseSDK();
 }
 
 // ---- Auth State ----
 let currentUser = null;
 
 // 监听登录状态变化
-function initAuthListener() {
+async function initAuthListener() {
+  await loadSupabaseSDK();
   const sb = getSupabase();
   if (!sb) return;
   sb.auth.onAuthStateChange((event, session) => {
@@ -41,28 +68,42 @@ function initAuthListener() {
 
 // 检查当前会话
 async function checkSession() {
+  await loadSupabaseSDK();
   const sb = getSupabase();
   if (!sb) return null;
-  const { data } = await sb.auth.getSession();
-  if (data.session) {
-    currentUser = data.session.user;
-    return currentUser;
+  try {
+    const { data } = await sb.auth.getSession();
+    if (data.session) {
+      currentUser = data.session.user;
+      return currentUser;
+    }
+  } catch(e) {
+    console.warn('会话检查失败:', e.message);
   }
   return null;
 }
 
+// 检查 Supabase 是否就绪（SDK 已加载 + 密钥已配置）
+function isSupabaseReady() {
+  return _supabaseReady &&
+         SUPABASE_URL !== 'https://YOUR_PROJECT.supabase.co' &&
+         SUPABASE_ANON_KEY !== 'YOUR_ANON_KEY';
+}
+
 // ---- 注册 ----
 async function signUp(email, password) {
+  await loadSupabaseSDK();
   const sb = getSupabase();
-  if (!sb) return { error: 'SDK 未配置' };
+  if (!sb) return { error: { message: '网络不可用' } };
   const { data, error } = await sb.auth.signUp({ email, password });
   return { data, error };
 }
 
 // ---- 登录 ----
 async function signIn(email, password) {
+  await loadSupabaseSDK();
   const sb = getSupabase();
-  if (!sb) return { error: 'SDK 未配置' };
+  if (!sb) return { error: { message: '网络不可用' } };
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
   return { data, error };
 }
@@ -70,8 +111,9 @@ async function signIn(email, password) {
 // ---- 登出 ----
 async function signOutUser() {
   const sb = getSupabase();
-  if (!sb) return;
-  await sb.auth.signOut();
+  if (sb) {
+    try { await sb.auth.signOut(); } catch(e) {}
+  }
   currentUser = null;
 }
 

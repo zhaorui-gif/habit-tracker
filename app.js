@@ -2,7 +2,7 @@
 const STORAGE_KEY = 'energy_tracker_v2';
 
 async function loadData() {
-  if (currentUser && isSupabaseConfigured()) {
+  if (currentUser && isSupabaseReady()) {
     try { return await dbLoadAll(); }
     catch (e) { console.error('云端加载失败:', e.message); }
   }
@@ -13,7 +13,7 @@ function saveData(data) {
   // 本地立即保存
   dbSaveLocal(data);
   // 云端异步同步（不阻塞 UI）
-  if (currentUser && isSupabaseConfigured()) {
+  if (currentUser && isSupabaseReady()) {
     dbSaveAll(data).catch(e => console.error('云端同步失败:', e.message));
   }
 }

@@ -5,12 +5,12 @@
 
 // ---- 保存全部数据到云端 ----
 async function dbSaveAll(data) {
-  if (!currentUser || !isSupabaseConfigured()) {
-    // 回退到 localStorage
+  if (!currentUser || !isSupabaseReady()) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     return;
   }
   const sb = getSupabase();
+  if (!sb) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); return; }
   const uid = currentUser.id;
 
   try {
@@ -103,11 +103,12 @@ async function dbSaveAll(data) {
 
 // ---- 从云端加载全部数据 ----
 async function dbLoadAll() {
-  if (!currentUser || !isSupabaseConfigured()) {
+  if (!currentUser || !isSupabaseReady()) {
     // 回退到 localStorage
     return loadFromLocalStorage();
   }
   const sb = getSupabase();
+  if (!sb) return loadFromLocalStorage();
   const uid = currentUser.id;
 
   try {
