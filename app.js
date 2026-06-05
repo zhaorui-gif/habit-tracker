@@ -1120,7 +1120,7 @@ $('#btnReset').addEventListener('click', () => {
 
 /* ===== Init ===== */
 async function initApp() {
-  // Setup energy ring
+  // 1. Setup energy ring (同步)
   const ring = $('#energyRing');
   if (ring) {
     const c = 2 * Math.PI * 78;
@@ -1128,25 +1128,28 @@ async function initApp() {
     ring.setAttribute('stroke-dashoffset', c);
   }
 
-  // Auth listener
-  initAuthListener();
+  // 2. 立即加载本地数据 + 渲染页面（不等网络）
+  appData = loadFromLocalStorage();
+  renderToday();
 
-  // Check existing session
-  const user = await checkSession();
-  if (user) {
-    // Already logged in → load cloud data and show app
-    const overlay = $('#authOverlay');
-    if (overlay) overlay.classList.add('hidden');
-    appData = await loadData();
-    renderToday();
-  } else {
-    // Not logged in → show auth overlay, load local data as fallback
-    appData = loadFromLocalStorage();
-    renderToday();
-  }
-
-  // Setup auth UI handlers
+  // 3. 立即注册 UI 事件（不等任何异步）
   setupAuthUI();
+
+  // 4. 后台静默检查云端会话（不阻塞页面）
+  loadSupabaseSDK().then(async () => {
+    await initAuthListener();
+    const user = await checkSession();
+    if (user) {
+      // 已登录 → 隐藏登录界面，从云端刷新数据
+      const overlay = $('#authOverlay');
+      if (overlay) overlay.classList.add('hidden');
+      appData = await loadData();
+      renderToday();
+      renderProfile();
+    }
+  }).catch(() => {
+    // SDK 加载失败，保持本地模式
+  });
 }
 
 // ---- Auth UI ----
