@@ -221,15 +221,11 @@
       </div>
 
       <div class="section">
-        <div class="section-header">
-          <h2>我的习惯</h2>
-          <button class="btn-icon small" id="btnAddHabit">＋</button>
-        </div>
-        <div class="habit-manage-list" id="habitManageList">
-          <div class="empty-state">
-            <span class="empty-icon">—</span>
-            <p>添加你的第一个习惯吧</p>
-          </div>
+        <div class="section-header"><h2>习惯管理</h2></div>
+        <div class="profile-link-card" id="btnManageHabits">
+          <span class="profile-link-icon">🌱</span>
+          <span class="profile-link-text" id="habitSummaryText">8 个习惯</span>
+          <span class="profile-link-arrow">›</span>
         </div>
       </div>
 
@@ -237,6 +233,15 @@
         <div class="section-header"><h2>近7天能量</h2></div>
         <div class="energy-chart" id="energyChart">
           <div class="empty-state small"><p>开始打卡后会显示能量趋势</p></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><h2>账号</h2></div>
+        <div class="profile-link-card" id="btnSwitchAccount">
+          <span class="profile-link-icon">↻</span>
+          <span class="profile-link-text">切换账号</span>
+          <span class="profile-link-arrow">›</span>
         </div>
       </div>
 
@@ -345,6 +350,22 @@
       <div class="modal-footer">
         <button class="btn btn-secondary modal-close">取消</button>
         <button class="btn btn-primary" id="btnConfirmRedeem">确认兑换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 习惯管理模态 ===== -->
+  <div class="modal-overlay" id="modalManageHabits">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>习惯管理</h3>
+        <button class="btn-close modal-close">✕</button>
+      </div>
+      <div class="modal-body" id="manageHabitsBody">
+        <div class="empty-state"><span class="empty-icon">—</span><p>还没有习惯</p></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnAddHabitFromManage">＋ 添加习惯</button>
       </div>
     </div>
   </div>

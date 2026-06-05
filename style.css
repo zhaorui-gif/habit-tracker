@@ -1339,6 +1339,99 @@ body {
 .habit-manage-item .hm-delete:active { color: #E08070; }
 
 /* ==========================================================================
+   Profile Link Cards + Habit Management
+   ========================================================================== */
+
+.profile-link-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  border: 0.5px solid rgba(181,202,186,0.12);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-link-card:active {
+  background: rgba(255,255,255,0.18);
+  transform: scale(0.98);
+}
+
+.profile-link-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.profile-link-text {
+  flex: 1;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: var(--text-on-dark);
+}
+
+.profile-link-arrow {
+  font-size: 1.4rem;
+  color: var(--forest-100);
+  font-weight: 300;
+}
+
+.manage-habit-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 0.5px solid var(--accent-light);
+}
+
+.manage-habit-row:last-child { border-bottom: none; }
+
+.manage-habit-row .mh-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+.manage-habit-row .mh-info { flex: 1; min-width: 0; }
+
+.manage-habit-row .mh-name { font-weight: 400; font-size: 0.86rem; color: var(--text-primary); }
+
+.manage-habit-row .mh-meta {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  font-weight: 350;
+}
+
+.manage-habit-row .mh-energy {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--forest-500);
+  flex-shrink: 0;
+}
+
+.manage-habit-row .mh-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.manage-habit-row .mh-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 0.5px solid var(--forest-100);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--forest-500);
+  transition: all 0.15s ease;
+}
+
+.manage-habit-row .mh-btn:active { background: var(--accent-light); }
+
+.manage-habit-row .mh-btn.delete:active { color: #B0504A; border-color: #B0504A; }
+
+/* ==========================================================================
    Energy Chart
    ========================================================================== */
 
@@ -1684,9 +1777,9 @@ body {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: var(--radius-xl);
-  padding: 36px 28px 28px;
-  width: 100%;
-  max-width: 360px;
+  padding: 36px 20px 28px;
+  width: calc(100% - 32px);
+  max-width: 380px;
   text-align: center;
   border: 0.5px solid rgba(181,202,186,0.15);
 }
@@ -1726,10 +1819,12 @@ body {
 
 .auth-form {
   text-align: left;
+  width: 100%;
 }
 
 .auth-form .form-group {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  width: 100%;
 }
 
 .auth-form .form-group label {
@@ -1744,7 +1839,10 @@ body {
   border: 0.5px solid rgba(181,202,186,0.2);
   color: var(--text-on-dark);
   border-radius: var(--radius-sm);
-  padding: 11px 14px;
+  padding: 12px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 0.88rem;
 }
 
 .auth-form .form-group input::placeholder {

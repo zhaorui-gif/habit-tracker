@@ -835,41 +835,92 @@ function renderProfile() {
   $('#profileTotalEnergy').textContent = totalEarned;
   $('#profileStreak').textContent = (appData.streakBest||0) + '天';
   $('#profileCheckins').textContent = totalCheckins + '次';
-  renderHabitManageList();
+  // Summary card
+  const count = appData.habits.length;
+  const summaryEl = $('#habitSummaryText');
+  if (summaryEl) summaryEl.textContent = count + ' 个习惯';
   renderEnergyChart();
 }
 
-function renderHabitManageList() {
-  const container = $('#habitManageList');
-  if (!container) return;
+// ---- 习惯管理模态 ----
+function openManageHabitsModal() {
+  const body = $('#manageHabitsBody');
+  if (!body) return;
+
   if (appData.habits.length === 0) {
-    container.innerHTML = '<div class="empty-state"><span class="empty-icon">—</span><p>添加你的第一个习惯吧</p></div>';
-    return;
+    body.innerHTML = '<div class="empty-state"><span class="empty-icon">—</span><p>还没有习惯</p></div>';
+  } else {
+    const freqKeys = ['sun','mon','tue','wed','thu','fri','sat'];
+    const freqLabels = ['日','一','二','三','四','五','六'];
+    body.innerHTML = appData.habits.map(h => {
+      const days = freqLabels.filter((_,i) => h.frequency.includes(freqKeys[i])).join('·');
+      return `<div class="manage-habit-row" data-habit-id="${h.id}">
+        <span class="mh-icon">${h.icon}</span>
+        <div class="mh-info">
+          <div class="mh-name">${escHtml(h.name)}</div>
+          <div class="mh-meta">${h.category} · ${days||'无'}</div>
+        </div>
+        <span class="mh-energy">+${h.energyValue} ⚡</span>
+        <div class="mh-actions">
+          <button class="mh-btn edit" data-action="edit">✎</button>
+          <button class="mh-btn delete" data-action="delete">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    body.querySelectorAll('[data-action="edit"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const row = btn.closest('.manage-habit-row');
+        if (row) openEditHabitModal(row.dataset.habitId);
+      });
+    });
+    body.querySelectorAll('[data-action="delete"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const row = btn.closest('.manage-habit-row');
+        if (row) {
+          const habit = appData.habits.find(h => h.id === row.dataset.habitId);
+          if (habit && confirm('删除「' + habit.name + '」？打卡记录保留。')) {
+            appData.habits = appData.habits.filter(h => h.id !== row.dataset.habitId);
+            saveData(appData);
+            openManageHabitsModal(); // refresh modal
+            renderToday();
+            renderProfile();
+          }
+        }
+      });
+    });
   }
-  container.innerHTML = appData.habits.map(h => {
-    const freqStr = ['日','一','二','三','四','五','六'].filter((_,i) =>
-      h.frequency.includes(['sun','mon','tue','wed','thu','fri','sat'][i])).join('·');
-    return `<div class="habit-manage-item" data-habit-id="${h.id}">
-      <span class="hm-icon">${h.icon}</span>
-      <div class="hm-info"><div class="hm-name">${escHtml(h.name)}</div><div class="hm-meta">${h.category} · ${freqStr||'无'}</div></div>
-      <span class="hm-energy">+${h.energyValue} ⚡</span>
-      <button class="hm-delete" data-action="delete-habit">✕</button>
-    </div>`;
-  }).join('');
-  container.querySelectorAll('[data-action="delete-habit"]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const item = btn.closest('.habit-manage-item');
-      if (item) deleteHabit(item.dataset.habitId);
-    });
-  });
-  container.querySelectorAll('.habit-manage-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-      if (e.target.closest('[data-action]')) return;
-      openEditHabitModal(item.dataset.habitId);
-    });
-  });
+  $('#modalManageHabits').classList.add('active');
 }
+
+// Add habit from manage modal
+$('#btnAddHabitFromManage').addEventListener('click', () => {
+  openAddHabitModal();
+});
+
+// Wire up profile link cards
+$('#btnManageHabits').addEventListener('click', openManageHabitsModal);
+
+$('#btnSwitchAccount').addEventListener('click', async () => {
+  if (currentUser) {
+    await signOutUser();
+  }
+  // Show auth overlay
+  const overlay = $('#authOverlay');
+  if (overlay) overlay.classList.remove('hidden');
+  // Reset auth form
+  isAuthMode = false;
+  $('#authTitle').textContent = '欢迎回来';
+  $('#authSub').textContent = '登录以同步你的数据';
+  $('#authSubmit').textContent = '登录';
+  $('#nameGroup').style.display = 'none';
+  $('#authToggleLink').textContent = '注册';
+  $('#authEmail').value = '';
+  $('#authPassword').value = '';
+  const msg = $('#authMsg'); if (msg) msg.remove();
+});
 
 function deleteHabit(habitId) {
   if (!confirm('确定删除？打卡记录会保留。')) return;
@@ -1001,7 +1052,7 @@ $('#btnSaveHabit').addEventListener('click', () => {
   renderProfile();
 });
 
-$('#btnAddHabit').addEventListener('click', openAddHabitModal);
+// btnAddHabit removed from profile — use btnAddHabitFromManage instead
 
 /* ===== Plan Modal ===== */
 $('#btnAddPlan').addEventListener('click', () => {
