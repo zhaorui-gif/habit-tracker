@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background: warm cream -->
+  <rect width="512" height="512" rx="80" fill="#FFFDF5"/>
+
+  <!-- Three bold tree shapes — solid thick triangles -->
+  <!-- Left tree -->
+  <polygon points="100,380 180,100 260,380" fill="#275F3E"/>
+  <!-- Center tree (taller) -->
+  <polygon points="200,380 256,60 312,380" fill="#1A3C28"/>
+  <!-- Right tree -->
+  <polygon points="320,380 380,120 440,380" fill="#275F3E"/>
+
+  <!-- Left tree highlight -->
+  <polygon points="130,380 180,160 230,380" fill="#4A8F5E" opacity="0.6"/>
+  <!-- Right tree highlight -->
+  <polygon points="345,380 380,180 415,380" fill="#4A8F5E" opacity="0.6"/>
+
+  <!-- Bold yellow sun peeking behind trees -->
+  <circle cx="256" cy="56" r="72" fill="#F5C542"/>
+  <!-- Sun rays -->
+  <rect x="246" y="10" width="20" height="16" rx="8" fill="#F5C542"/>
+  <rect x="290" y="30" width="16" height="20" rx="8" fill="#F5C542" transform="rotate(30 298 40)"/>
+  <rect x="202" y="30" width="16" height="20" rx="8" fill="#F5C542" transform="rotate(-30 210 40)"/>
+
+  <!-- Ground block -->
+  <rect x="0" y="380" width="512" height="52" rx="0" fill="#1A3C28"/>
+  <rect x="0" y="380" width="512" height="8" rx="0" fill="#F5C542" opacity="0.5"/>
+</svg>

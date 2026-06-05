@@ -1,0 +1,2641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#667eea">
+  <title>能量打卡</title>
+  
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --primary: #667eea;
+  --primary-dark: #5a6fd6;
+  --primary-light: #eef0ff;
+  --accent: #f59e0b;
+  --accent-light: #fef3c7;
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --bg: #f2f3f8;
+  --card: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 8px;
+  --nav-height: 64px;
+  --header-height: 56px;
+}
+
+/* ===== Reset ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: #1a1a2e;
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== App Container (Phone Frame) ===== */
+.app-container {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+  padding-bottom: var(--nav-height);
+}
+
+/* ===== Tab Content ===== */
+.tab-content {
+  display: none;
+  padding: 16px;
+  padding-top: calc(var(--header-height) + 16px);
+  animation: fadeIn 0.25s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Header ===== */
+.header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  height: var(--header-height);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.header h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.greeting {
+  flex: 1;
+}
+
+.greeting-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.date-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.header-energy .energy-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #92400e;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+.energy-icon {
+  font-size: 1.1rem;
+}
+
+/* ===== Energy Ring ===== */
+.energy-ring-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0 16px;
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.energy-ring {
+  width: 180px;
+  height: 180px;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 10;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: url(#ringGradient);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.energy-ring-center {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+}
+
+.energy-ring-icon {
+  font-size: 1.6rem;
+}
+
+.energy-ring-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.energy-ring-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ===== Stats Row ===== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-icon {
+  font-size: 1.4rem;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+/* ===== Sections ===== */
+.section {
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.section-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.section-badge {
+  font-size: 0.75rem;
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* ===== Habit List (Today) ===== */
+.habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.habit-item {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.habit-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.habit-item.completed {
+  opacity: 0.55;
+  background: #f8fafc;
+}
+
+.habit-item.completed .habit-name {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.habit-check {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  font-size: 0.8rem;
+  color: transparent;
+}
+
+.habit-item.completed .habit-check {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+.habit-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.habit-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.habit-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: all 0.2s ease;
+}
+
+.habit-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.habit-energy-badge {
+  background: var(--accent-light);
+  color: #92400e;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+/* Check-in animation */
+.habit-item.just-checked .habit-check {
+  animation: checkPop 0.4s ease;
+}
+
+@keyframes checkPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+/* Floating energy particle */
+.energy-particle {
+  position: fixed;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  pointer-events: none;
+  z-index: 1000;
+  animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-muted);
+}
+
+.empty-state.small {
+  padding: 16px;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+.empty-state p {
+  font-size: 0.85rem;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-xs);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #764ba2);
+  color: white;
+}
+
+.btn-secondary {
+  background: var(--border);
+  color: var(--text);
+}
+
+.btn-danger {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: var(--danger);
+  border: 1px solid var(--danger-light);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-danger:active {
+  background: var(--danger-light);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:active {
+  transform: scale(0.9);
+  background: #dde0ff;
+}
+
+.btn-icon.small {
+  width: 30px;
+  height: 30px;
+  font-size: 0.9rem;
+}
+
+.btn-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--border);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== Bottom Nav ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  height: var(--nav-height);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 16px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item .nav-icon {
+  font-size: 1.3rem;
+  transition: transform 0.2s ease;
+}
+
+.nav-item .nav-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-item.active .nav-label {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.nav-item.active .nav-icon {
+  transform: scale(1.15);
+}
+
+.nav-item:active .nav-icon {
+  transform: scale(0.9);
+}
+
+/* Nav center indicator */
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  width: 24px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 0 0 3px 3px;
+}
+
+/* ===== Calendar Strip ===== */
+.calendar-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 0 12px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.calendar-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 44px;
+  padding: 8px 6px;
+  border-radius: var(--radius-xs);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.calendar-day:active {
+  transform: scale(0.93);
+}
+
+.calendar-day.today {
+  background: var(--primary);
+}
+
+.calendar-day.today .cal-day,
+.calendar-day.today .cal-date {
+  color: white;
+}
+
+.calendar-day.selected {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.calendar-day .cal-day {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.calendar-day .cal-date {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-day .cal-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0;
+}
+
+.calendar-day.has-plans .cal-dot {
+  opacity: 1;
+}
+
+/* ===== Plan List ===== */
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plan-item {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.plan-time {
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 700;
+  background: var(--primary-light);
+  padding: 3px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  min-width: 48px;
+  text-align: center;
+}
+
+.plan-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.plan-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.plan-item.completed .plan-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.plan-check-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.plan-item.completed .plan-check-btn {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.plan-delete {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.plan-delete:active {
+  color: var(--danger);
+}
+
+/* ===== Reward Energy Bar ===== */
+.reward-energy-bar {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+
+.reward-energy-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.reward-energy-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.reward-energy-amount {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.reward-energy-track {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.reward-energy-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
+  border-radius: 5px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.reward-energy-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.reward-energy-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.reward-energy-meta strong {
+  color: var(--text-secondary);
+}
+
+/* ===== Reward Grid ===== */
+.reward-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.reward-card {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 16px 12px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.reward-card.redeemed {
+  opacity: 0.5;
+  filter: grayscale(30%);
+}
+
+.reward-card .reward-icon {
+  font-size: 2.2rem;
+}
+
+.reward-card .reward-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.reward-card .reward-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.reward-card .reward-cost {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.reward-card .btn-redeem {
+  width: 100%;
+  padding: 8px;
+  border-radius: var(--radius-xs);
+  border: none;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.reward-card .btn-redeem:active {
+  transform: scale(0.95);
+}
+
+.reward-card .btn-redeem:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.reward-card .btn-redeem:disabled:active {
+  transform: none;
+}
+
+/* ===== Redeem List ===== */
+.redeem-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.redeem-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--card);
+  border-radius: var(--radius-xs);
+  font-size: 0.85rem;
+}
+
+.redeem-item .redeem-icon {
+  font-size: 1.3rem;
+}
+
+.redeem-item .redeem-info {
+  flex: 1;
+}
+
+.redeem-item .redeem-info .redeem-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.redeem-item .redeem-info .redeem-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.redeem-item .redeem-cost {
+  color: var(--danger);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* ===== Profile ===== */
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.profile-stat {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 16px 8px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.profile-stat-val {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary);
+  display: block;
+}
+
+.profile-stat-lbl {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ===== Habit Manage List ===== */
+.habit-manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.habit-manage-item {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow);
+}
+
+.habit-manage-item .hm-icon {
+  font-size: 1.5rem;
+}
+
+.habit-manage-item .hm-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.habit-manage-item .hm-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.habit-manage-item .hm-meta {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.habit-manage-item .hm-energy {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+.habit-manage-item .hm-delete {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--text-muted);
+}
+
+.habit-manage-item .hm-delete:active {
+  color: var(--danger);
+}
+
+/* ===== Energy Chart ===== */
+.energy-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 120px;
+  padding: 8px 0;
+}
+
+.chart-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.chart-bar {
+  width: 100%;
+  max-width: 36px;
+  background: linear-gradient(180deg, var(--primary), #764ba2);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.6s ease;
+  min-height: 4px;
+}
+
+.chart-bar.negative {
+  background: linear-gradient(180deg, #fbbf24, #ef4444);
+}
+
+.chart-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.chart-value {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal {
+  background: var(--card);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 430px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.modal-sm {
+  max-height: fit-content;
+  text-align: center;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  border-radius: 20px 20px 0 0;
+}
+
+.modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.modal-body {
+  padding: 16px 20px;
+}
+
+.modal-footer {
+  padding: 12px 20px 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.modal-footer .btn {
+  flex: 1;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ===== Form ===== */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #f8fafc;
+  color: var(--text);
+  transition: border-color 0.2s ease;
+  -webkit-appearance: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-group input[type="range"] {
+  width: 100%;
+  accent-color: var(--primary);
+}
+
+.range-label {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* ===== Icon Picker ===== */
+.icon-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.icon-picker .icon-option {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-xs);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.15s ease;
+}
+
+.icon-picker .icon-option:active {
+  transform: scale(0.9);
+}
+
+.icon-picker .icon-option.selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  transform: scale(1.08);
+}
+
+.icon-picker.small .icon-option {
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+}
+
+/* ===== Weekday Picker ===== */
+.weekday-picker {
+  display: flex;
+  gap: 6px;
+}
+
+.weekday-picker .wd-option {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.15s ease;
+  color: var(--text-secondary);
+}
+
+.weekday-picker .wd-option:active {
+  transform: scale(0.9);
+}
+
+.weekday-picker .wd-option.selected {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+/* ===== Redeem Confirm ===== */
+.redeem-confirm-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+/* ===== Redeem Toast ===== */
+.redeem-toast {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+.redeem-toast.active {
+  display: flex;
+  animation: toastIn 0.3s ease;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.redeem-toast-content {
+  background: white;
+  border-radius: 20px;
+  padding: 28px 36px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: toastBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes toastBounce {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.redeem-toast-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.redeem-toast-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.redeem-toast-energy {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* ===== Responsive ===== */
+@media (min-width: 431px) {
+  .app-container {
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+}
+
+/* ===== SVG Gradient (hidden) ===== */
+.svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+</style>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- ===== 今日 Tab ===== -->
+    <div class="tab-content active" id="tab-today">
+      <header class="header">
+        <div class="greeting">
+          <h1 class="greeting-text" id="greetingText">早上好 ☀️</h1>
+          <p class="date-text" id="dateText"></p>
+        </div>
+        <div class="header-energy" id="headerEnergy">
+          <div class="energy-badge">
+            <span class="energy-icon">⚡</span>
+            <span class="energy-value" id="headerEnergyValue">0</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 能量环 -->
+      <div class="energy-ring-container">
+        <svg class="energy-ring" viewBox="0 0 200 200">
+          <circle class="ring-bg" cx="100" cy="100" r="85"></circle>
+          <circle class="ring-progress" id="energyRing" cx="100" cy="100" r="85"></circle>
+        </svg>
+        <div class="energy-ring-center">
+          <span class="energy-ring-icon">⚡</span>
+          <span class="energy-ring-value" id="energyRingValue">0</span>
+          <span class="energy-ring-label">当前能量</span>
+        </div>
+      </div>
+
+      <!-- 今日统计 -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-icon">🔥</span>
+          <span class="stat-value" id="streakDays">0</span>
+          <span class="stat-label">连续打卡</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">✅</span>
+          <span class="stat-value" id="todayDone">0/<span id="todayTotal">0</span></span>
+          <span class="stat-label">今日完成</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🎯</span>
+          <span class="stat-value" id="totalHabits">0</span>
+          <span class="stat-label">习惯总数</span>
+        </div>
+      </div>
+
+      <!-- 今日习惯列表 -->
+      <div class="section">
+        <div class="section-header">
+          <h2>今日习惯</h2>
+          <span class="section-badge" id="todayProgress">0%</span>
+        </div>
+        <div class="habit-list" id="todayHabitList">
+          <div class="empty-state">
+            <span class="empty-icon">📝</span>
+            <p>还没有习惯，去"我的"页面添加吧</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 计划 Tab ===== -->
+    <div class="tab-content" id="tab-plans">
+      <header class="header">
+        <h1>📋 我的计划</h1>
+        <button class="btn-icon" id="btnAddPlan" title="添加计划">➕</button>
+      </header>
+
+      <!-- 简易日历条 -->
+      <div class="calendar-strip" id="calendarStrip"></div>
+
+      <!-- 当日计划 -->
+      <div class="section">
+        <div class="section-header">
+          <h2 id="planDateTitle">今日计划</h2>
+          <span class="section-badge" id="planCount">0项</span>
+        </div>
+        <div class="plan-list" id="planList">
+          <div class="empty-state">
+            <span class="empty-icon">📅</span>
+            <p>暂无计划，点击右上角➕添加</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 奖励 Tab ===== -->
+    <div class="tab-content" id="tab-rewards">
+      <header class="header">
+        <h1>🎁 奖励商城</h1>
+        <button class="btn-icon" id="btnAddReward" title="添加奖励">➕</button>
+      </header>
+
+      <!-- 可用能量 -->
+      <div class="reward-energy-bar">
+        <div class="reward-energy-info">
+          <span class="reward-energy-label">可用能量</span>
+          <span class="reward-energy-amount" id="rewardEnergyAmount">0 ⚡</span>
+        </div>
+        <div class="reward-energy-track">
+          <div class="reward-energy-fill" id="rewardEnergyFill"></div>
+        </div>
+        <div class="reward-energy-meta">
+          <span>累计获得 <strong id="totalEarned">0</strong></span>
+          <span>累计兑换 <strong id="totalSpent">0</strong></span>
+        </div>
+      </div>
+
+      <!-- 奖励列表 -->
+      <div class="section">
+        <div class="section-header">
+          <h2>可兑换奖励</h2>
+        </div>
+        <div class="reward-grid" id="rewardGrid">
+          <div class="empty-state">
+            <span class="empty-icon">🎁</span>
+            <p>还没有奖励，点击右上角➕添加</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 兑换记录 -->
+      <div class="section" id="redeemHistorySection" style="display:none;">
+        <div class="section-header">
+          <h2>兑换记录</h2>
+        </div>
+        <div class="redeem-list" id="redeemList"></div>
+      </div>
+    </div>
+
+    <!-- ===== 我的 Tab ===== -->
+    <div class="tab-content" id="tab-profile">
+      <header class="header">
+        <h1>👤 我的</h1>
+      </header>
+
+      <!-- 总览 -->
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <span class="profile-stat-val" id="profileTotalEnergy">0</span>
+          <span class="profile-stat-lbl">累计能量</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-val" id="profileStreak">0天</span>
+          <span class="profile-stat-lbl">最长连续</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-val" id="profileCheckins">0次</span>
+          <span class="profile-stat-lbl">总打卡</span>
+        </div>
+      </div>
+
+      <!-- 习惯管理 -->
+      <div class="section">
+        <div class="section-header">
+          <h2>我的习惯</h2>
+          <button class="btn-icon small" id="btnAddHabit">➕</button>
+        </div>
+        <div class="habit-manage-list" id="habitManageList">
+          <div class="empty-state">
+            <span class="empty-icon">🌟</span>
+            <p>添加你的第一个习惯吧</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 能量历史简约图 -->
+      <div class="section">
+        <div class="section-header">
+          <h2>近7天能量</h2>
+        </div>
+        <div class="energy-chart" id="energyChart">
+          <div class="empty-state small">
+            <p>开始打卡后会显示能量趋势</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <button class="btn-danger" id="btnReset">🔄 重置所有数据</button>
+      </div>
+    </div>
+
+    <!-- ===== 底部导航 ===== -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" data-tab="today">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">今日</span>
+      </div>
+      <div class="nav-item" data-tab="plans">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">计划</span>
+      </div>
+      <div class="nav-item" data-tab="rewards">
+        <span class="nav-icon">🎁</span>
+        <span class="nav-label">奖励</span>
+      </div>
+      <div class="nav-item" data-tab="profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">我的</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ===== 模态层 ===== -->
+  <!-- 添加/编辑习惯 -->
+  <div class="modal-overlay" id="modalHabit">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalHabitTitle">添加习惯</h3>
+        <button class="btn-close modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="habitEditId">
+        <div class="form-group">
+          <label>习惯名称</label>
+          <input type="text" id="habitName" placeholder="例如：早起、跑步、阅读...">
+        </div>
+        <div class="form-group">
+          <label>图标</label>
+          <div class="icon-picker" id="iconPicker"></div>
+        </div>
+        <div class="form-group">
+          <label>分类</label>
+          <select id="habitCategory">
+            <option value="健康">🏃 健康</option>
+            <option value="学习">📚 学习</option>
+            <option value="生活">🏡 生活</option>
+            <option value="工作">💼 工作</option>
+            <option value="社交">💬 社交</option>
+            <option value="其他">🌟 其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>能量值 (1-100)</label>
+          <input type="range" id="habitEnergy" min="1" max="100" value="10">
+          <span class="range-label" id="habitEnergyLabel">10 ⚡</span>
+        </div>
+        <div class="form-group">
+          <label>重复日</label>
+          <div class="weekday-picker" id="weekdayPicker"></div>
+        </div>
+        <div class="form-group">
+          <label>时段</label>
+          <select id="habitTimeOfDay">
+            <option value="anytime">🌤️ 任意时间</option>
+            <option value="morning">🌅 早晨</option>
+            <option value="afternoon">☀️ 下午</option>
+            <option value="evening">🌙 晚上</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close">取消</button>
+        <button class="btn btn-primary" id="btnSaveHabit">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加计划 -->
+  <div class="modal-overlay" id="modalPlan">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>添加计划</h3>
+        <button class="btn-close modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>计划标题</label>
+          <input type="text" id="planTitle" placeholder="要做什么？">
+        </div>
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>日期</label>
+            <input type="date" id="planDate">
+          </div>
+          <div class="form-group flex-1">
+            <label>时间</label>
+            <input type="time" id="planTime">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>备注</label>
+          <textarea id="planDesc" rows="2" placeholder="详细描述（可选）"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close">取消</button>
+        <button class="btn btn-primary" id="btnSavePlan">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加奖励 -->
+  <div class="modal-overlay" id="modalReward">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>添加奖励</h3>
+        <button class="btn-close modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>奖励名称</label>
+          <input type="text" id="rewardName" placeholder="例如：看一集剧、买杯奶茶...">
+        </div>
+        <div class="form-group">
+          <label>图标</label>
+          <div class="icon-picker small" id="rewardIconPicker"></div>
+        </div>
+        <div class="form-group">
+          <label>所需能量值 (1-500)</label>
+          <input type="range" id="rewardCost" min="1" max="500" value="30">
+          <span class="range-label" id="rewardCostLabel">30 ⚡</span>
+        </div>
+        <div class="form-group">
+          <label>描述</label>
+          <textarea id="rewardDesc" rows="2" placeholder="描述这个奖励（可选）"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close">取消</button>
+        <button class="btn btn-primary" id="btnSaveReward">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 兑换确认 -->
+  <div class="modal-overlay" id="modalRedeem">
+    <div class="modal modal-sm">
+      <div class="modal-body text-center">
+        <div class="redeem-confirm-icon" id="redeemConfirmIcon"></div>
+        <h3>确认兑换？</h3>
+        <p>将消耗 <strong id="redeemConfirmCost">0 ⚡</strong></p>
+        <p>兑换后剩余 <strong id="redeemConfirmRemain">0 ⚡</strong></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close">取消</button>
+        <button class="btn btn-primary" id="btnConfirmRedeem">确认兑换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 兑换成功动画覆盖层 -->
+  <div class="redeem-toast" id="redeemToast">
+    <div class="redeem-toast-content">
+      <span class="redeem-toast-icon">🎉</span>
+      <p class="redeem-toast-title">兑换成功！</p>
+      <p class="redeem-toast-energy" id="redeemToastEnergy"></p>
+    </div>
+  </div>
+
+  <script>
+/* ===== Storage ===== */
+const STORAGE_KEY = 'energy_tracker_data';
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return getDefaultData();
+  try {
+    const data = JSON.parse(raw);
+    return migrateData(data);
+  } catch (e) {
+    return getDefaultData();
+  }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getDefaultData() {
+  const demoHabits = [
+    { id: 'demo1', name: '早起 (7:00前)', icon: '🌅', category: '健康', energyValue: 15, frequency: ['mon','tue','wed','thu','fri','sat','sun'], timeOfDay: 'morning' },
+    { id: 'demo2', name: '阅读30分钟', icon: '📚', category: '学习', energyValue: 10, frequency: ['mon','tue','wed','thu','fri','sat','sun'], timeOfDay: 'anytime' },
+    { id: 'demo3', name: '运动锻炼', icon: '🏃', category: '健康', energyValue: 20, frequency: ['mon','tue','wed','thu','fri'], timeOfDay: 'afternoon' },
+    { id: 'demo4', name: '冥想10分钟', icon: '🧘', category: '健康', energyValue: 8, frequency: ['mon','tue','wed','thu','fri','sat','sun'], timeOfDay: 'evening' },
+    { id: 'demo5', name: '喝8杯水', icon: '💧', category: '健康', energyValue: 10, frequency: ['mon','tue','wed','thu','fri','sat','sun'], timeOfDay: 'anytime' },
+    { id: 'demo6', name: '写日记', icon: '✍️', category: '生活', energyValue: 8, frequency: ['mon','tue','wed','thu','fri','sat','sun'], timeOfDay: 'evening' },
+    { id: 'demo7', name: '学习新技能', icon: '💻', category: '学习', energyValue: 12, frequency: ['mon','tue','wed','thu','fri'], timeOfDay: 'anytime' },
+    { id: 'demo8', name: '整理房间', icon: '🧹', category: '生活', energyValue: 10, frequency: ['sat','sun'], timeOfDay: 'anytime' },
+  ];
+
+  const demoRewards = [
+    { id: 'demor1', name: '看一集剧', icon: '📺', energyCost: 30, description: '追一集喜欢的剧放松一下', createdAt: new Date().toISOString() },
+    { id: 'demor2', name: '喝杯奶茶', icon: '🧋', energyCost: 25, description: '奖励自己一杯奶茶', createdAt: new Date().toISOString() },
+    { id: 'demor3', name: '玩游戏1小时', icon: '🎮', energyCost: 50, description: '尽情享受游戏时光', createdAt: new Date().toISOString() },
+    { id: 'demor4', name: '买个小礼物', icon: '🎁', energyCost: 80, description: '给自己买个小礼物', createdAt: new Date().toISOString() },
+    { id: 'demor5', name: '睡个懒觉', icon: '💤', energyCost: 40, description: '周末睡到自然醒', createdAt: new Date().toISOString() },
+    { id: 'demor6', name: '外出吃大餐', icon: '🍕', energyCost: 100, description: '去喜欢的餐厅大吃一顿', createdAt: new Date().toISOString() },
+  ];
+
+  return {
+    habits: demoHabits,
+    habitLogs: {},
+    plans: [],
+    rewards: demoRewards,
+    redeemHistory: [],
+    energyHistory: {},
+    createdAt: todayStr(),
+    streakBest: 0
+  };
+}
+
+function migrateData(data) {
+  if (!data.habitLogs) data.habitLogs = {};
+  if (!data.plans) data.plans = [];
+  if (!data.rewards) data.rewards = [];
+  if (!data.redeemHistory) data.redeemHistory = [];
+  if (!data.energyHistory) data.energyHistory = {};
+  if (!data.streakBest) data.streakBest = 0;
+  return data;
+}
+
+/* ===== Helpers ===== */
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' +
+    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+    String(d.getDate()).padStart(2, '0');
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diff = (today - target) / 86400000;
+  if (diff === 0) return '今天';
+  if (diff === 1) return '昨天';
+  if (diff === 2) return '前天';
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  return m + '/' + day;
+}
+
+function formatFullDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+}
+
+function getWeekdayLabel(n) {
+  return ['日', '一', '二', '三', '四', '五', '六'][n];
+}
+
+function getTodayWeekday() {
+  return new Date().getDay();
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+/* ===== App State ===== */
+let appData = loadData();
+
+/* ===== DOM Refs ===== */
+function $(sel) { return document.querySelector(sel); }
+function $(sel) { return document.querySelectorAll(sel); }
+
+/* ===== Navigation ===== */
+$('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const tab = item.dataset.tab;
+    switchTab(tab);
+  });
+});
+
+function switchTab(tab) {
+  $('.nav-item').forEach(n => n.classList.remove('active'));
+  $('.tab-content').forEach(c => c.classList.remove('active'));
+
+  const navItem = document.querySelector(`.nav-item[data-tab="${tab}"]`);
+  const content = document.getElementById('tab-' + tab);
+  if (navItem) navItem.classList.add('active');
+  if (content) content.classList.add('active');
+
+  if (tab === 'today') renderToday();
+  else if (tab === 'plans') renderPlans();
+  else if (tab === 'rewards') renderRewards();
+  else if (tab === 'profile') renderProfile();
+}
+
+/* ===== Greeting ===== */
+function updateGreeting() {
+  const h = new Date().getHours();
+  let text;
+  if (h < 6) text = '夜深了 🌙';
+  else if (h < 9) text = '早上好 ☀️';
+  else if (h < 12) text = '上午好 🌤️';
+  else if (h < 14) text = '中午好 ☀️';
+  else if (h < 18) text = '下午好 🌈';
+  else if (h < 21) text = '晚上好 🌙';
+  else text = '夜深了 🌙';
+
+  const el = $('#greetingText');
+  if (el) el.textContent = text;
+}
+
+function updateDateText() {
+  const d = new Date();
+  const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+  const text = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 星期' + weekdays[d.getDay()];
+  const el = $('#dateText');
+  if (el) el.textContent = text;
+}
+
+/* ===== Energy Calculations ===== */
+function getTodayEnergyEarned() {
+  const today = todayStr();
+  let earned = 0;
+  const logs = appData.habitLogs[today] || {};
+  appData.habits.forEach(h => {
+    if (logs[h.id]) earned += h.energyValue;
+  });
+  return earned;
+}
+
+function getTotalEnergyEarned() {
+  let total = 0;
+  Object.keys(appData.habitLogs).forEach(date => {
+    const logs = appData.habitLogs[date] || {};
+    appData.habits.forEach(h => {
+      if (logs[h.id]) total += h.energyValue;
+    });
+  });
+  return total;
+}
+
+function getTotalEnergySpent() {
+  return appData.redeemHistory.reduce((sum, r) => sum + r.energyCost, 0);
+}
+
+function getCurrentEnergy() {
+  return getTotalEnergyEarned() - getTotalEnergySpent();
+}
+
+function getTodayHabits() {
+  const todayWD = getTodayWeekday();
+  const wdKey = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][todayWD];
+  return appData.habits.filter(h => h.frequency.includes(wdKey));
+}
+
+function getStreak() {
+  let streak = 0;
+  const d = new Date();
+
+  while (true) {
+    const dateStr = d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+    const logs = appData.habitLogs[dateStr] || {};
+    const habitsForDay = getHabitsForDate(dateStr);
+
+    if (habitsForDay.length === 0) {
+      // Day with no scheduled habits — skip, don't break streak
+      d.setDate(d.getDate() - 1);
+      continue;
+    }
+
+    const completed = habitsForDay.filter(h => logs[h.id]).length;
+    if (completed < habitsForDay.length) break;
+    streak++;
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
+function getHabitsForDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const wd = d.getDay();
+  const wdKey = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][wd];
+  return appData.habits.filter(h => h.frequency.includes(wdKey));
+}
+
+/* ===== Render: Today ===== */
+function renderToday() {
+  updateGreeting();
+  updateDateText();
+  updateHeaderEnergy();
+  updateEnergyRing();
+  updateStatsRow();
+  renderTodayHabits();
+}
+
+function updateHeaderEnergy() {
+  const el = $('#headerEnergyValue');
+  if (el) el.textContent = getCurrentEnergy();
+}
+
+function updateEnergyRing() {
+  const el = $('#energyRingValue');
+  if (el) el.textContent = getCurrentEnergy();
+
+  const ring = $('#energyRing');
+  if (!ring) return;
+  const circumference = 2 * Math.PI * 85;
+  const maxEnergy = Math.max(getCurrentEnergy(), 100);
+  const ratio = Math.min(getCurrentEnergy() / maxEnergy, 1);
+  ring.setAttribute('stroke-dasharray', circumference);
+  ring.setAttribute('stroke-dashoffset', circumference * (1 - ratio));
+}
+
+function updateStatsRow() {
+  const today = todayStr();
+  const todayHabits = getTodayHabits();
+  const logs = appData.habitLogs[today] || {};
+  const done = todayHabits.filter(h => logs[h.id]).length;
+  const total = todayHabits.length;
+
+  const streak = getStreak();
+  if (streak > appData.streakBest) {
+    appData.streakBest = streak;
+    saveData(appData);
+  }
+
+  $('#streakDays').textContent = streak;
+  $('#todayDone').innerHTML = done + '/<span id="todayTotal">' + total + '</span>';
+  $('#totalHabits').textContent = appData.habits.length;
+  $('#todayProgress').textContent = total > 0 ? Math.round((done / total) * 100) + '%' : '0%';
+}
+
+function renderTodayHabits() {
+  const today = todayStr();
+  const todayHabits = getTodayHabits();
+  const logs = appData.habitLogs[today] || {};
+  const container = $('#todayHabitList');
+  if (!container) return;
+
+  if (todayHabits.length === 0) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-icon">📝</span><p>今天没有安排习惯，去"我的"页面添加吧</p></div>`;
+    return;
+  }
+
+  container.innerHTML = todayHabits.map(h => {
+    const done = !!logs[h.id];
+    const timeLabel = { morning: '🌅 早晨', afternoon: '☀️ 下午', evening: '🌙 晚上', anytime: '🌤️ 任意时间' }[h.timeOfDay];
+    const catLabel = h.category;
+    return `
+      <div class="habit-item${done ? ' completed' : ''}" data-habit-id="${h.id}">
+        <div class="habit-check">✓</div>
+        <div class="habit-icon">${h.icon}</div>
+        <div class="habit-info">
+          <div class="habit-name">${escHtml(h.name)}</div>
+          <div class="habit-meta">${catLabel} · ${timeLabel}</div>
+        </div>
+        <div class="habit-energy-badge">+${h.energyValue} ⚡</div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.habit-item').forEach(item => {
+    item.addEventListener('click', () => toggleHabit(item.dataset.habitId, item));
+  });
+}
+
+function toggleHabit(habitId, el) {
+  const today = todayStr();
+  if (!appData.habitLogs[today]) appData.habitLogs[today] = {};
+
+  const habit = appData.habits.find(h => h.id === habitId);
+  if (!habit) return;
+
+  if (appData.habitLogs[today][habitId]) {
+    // Undo
+    delete appData.habitLogs[today][habitId];
+  } else {
+    // Complete
+    appData.habitLogs[today][habitId] = true;
+    spawnEnergyParticle(el, habit.energyValue);
+  }
+
+  // Update energy history for today
+  updateEnergyHistory(today);
+
+  saveData(appData);
+  renderToday();
+}
+
+function updateEnergyHistory(dateStr) {
+  const earned = getTotalEnergyEarned();
+  const spent = getTotalEnergySpent();
+  appData.energyHistory[dateStr] = {
+    earned: earned,
+    spent: spent,
+    balance: earned - spent
+  };
+}
+
+function spawnEnergyParticle(el, value) {
+  const rect = el.getBoundingClientRect();
+  const particle = document.createElement('div');
+  particle.className = 'energy-particle';
+  particle.textContent = '+' + value + ' ⚡';
+  particle.style.left = rect.left + rect.width / 2 - 30 + 'px';
+  particle.style.top = rect.top + 'px';
+  document.body.appendChild(particle);
+  particle.addEventListener('animationend', () => particle.remove());
+}
+
+function escHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ===== Render: Plans ===== */
+function renderPlans() {
+  const today = todayStr();
+  renderCalendarStrip(today);
+  renderPlanList(today);
+}
+
+function renderCalendarStrip(selectedDate) {
+  const container = $('#calendarStrip');
+  if (!container) return;
+
+  const today = todayStr();
+  const dates = [];
+  for (let i = -3; i <= 10; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    dates.push({
+      str: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
+      day: getWeekdayLabel(d.getDay()),
+      date: d.getDate(),
+      isToday: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') === today
+    });
+  }
+
+  container.innerHTML = dates.map(d => {
+    const hasPlans = appData.plans.some(p => p.date === d.str);
+    const isSelected = d.str === selectedDate;
+    const isToday = d.isToday;
+    return `
+      <div class="calendar-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${hasPlans ? ' has-plans' : ''}" data-date="${d.str}">
+        <span class="cal-day">${d.day}</span>
+        <span class="cal-date">${d.date}</span>
+        <span class="cal-dot"></span>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.calendar-day').forEach(day => {
+    day.addEventListener('click', () => {
+      container.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+      day.classList.add('selected');
+      renderPlanList(day.dataset.date);
+    });
+  });
+
+  // Scroll today into view
+  const todayEl = container.querySelector('.today');
+  if (todayEl) {
+    todayEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+}
+
+function renderPlanList(dateStr) {
+  const container = $('#planList');
+  const titleEl = $('#planDateTitle');
+  const countEl = $('#planCount');
+  if (!container) return;
+
+  if (titleEl) {
+    titleEl.textContent = dateStr === todayStr() ? '今日计划' : formatFullDate(dateStr) + ' 计划';
+  }
+
+  const plans = appData.plans
+    .filter(p => p.date === dateStr)
+    .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+  if (countEl) countEl.textContent = plans.length + '项';
+
+  if (plans.length === 0) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-icon">📅</span><p>暂无计划，点击右上角➕添加</p></div>`;
+    return;
+  }
+
+  container.innerHTML = plans.map(p => `
+    <div class="plan-item${p.completed ? ' completed' : ''}" data-plan-id="${p.id}">
+      <div class="plan-time">${p.time || '全天'}</div>
+      <div class="plan-content">
+        <div class="plan-title">${escHtml(p.title)}</div>
+        ${p.description ? `<div class="plan-desc">${escHtml(p.description)}</div>` : ''}
+      </div>
+      <button class="plan-check-btn" data-action="toggle"></button>
+      <button class="plan-delete" data-action="delete">🗑</button>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.plan-item').forEach(item => {
+    item.querySelector('[data-action="toggle"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePlan(item.dataset.planId);
+    });
+    item.querySelector('[data-action="delete"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deletePlan(item.dataset.planId);
+    });
+  });
+}
+
+function togglePlan(planId) {
+  const plan = appData.plans.find(p => p.id === planId);
+  if (!plan) return;
+  plan.completed = !plan.completed;
+  saveData(appData);
+  renderPlans();
+}
+
+function deletePlan(planId) {
+  appData.plans = appData.plans.filter(p => p.id !== planId);
+  saveData(appData);
+  renderPlans();
+}
+
+/* ===== Render: Rewards ===== */
+function renderRewards() {
+  const currentEnergy = getCurrentEnergy();
+  const totalEarned = getTotalEnergyEarned();
+  const totalSpent = getTotalEnergySpent();
+
+  // Update energy display
+  $('#rewardEnergyAmount').textContent = currentEnergy + ' ⚡';
+  $('#totalEarned').textContent = totalEarned;
+  $('#totalSpent').textContent = totalSpent;
+
+  // Energy bar
+  const bar = $('#rewardEnergyFill');
+  if (bar) {
+    const maxEarned = Math.max(totalEarned, 100);
+    const ratio = Math.min(currentEnergy / maxEarned, 1);
+    bar.style.width = Math.max(ratio * 100, 0) + '%';
+  }
+
+  // Reward grid
+  renderRewardGrid(currentEnergy);
+
+  // Redeem history
+  renderRedeemHistory();
+}
+
+function renderRewardGrid(currentEnergy) {
+  const container = $('#rewardGrid');
+  if (!container) return;
+
+  if (appData.rewards.length === 0) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-icon">🎁</span><p>还没有奖励，点击右上角➕添加</p></div>`;
+    return;
+  }
+
+  container.innerHTML = appData.rewards.map(r => {
+    const canAfford = currentEnergy >= r.energyCost;
+    // Count how many times redeemed
+    const redeemedCount = appData.redeemHistory.filter(h => h.rewardId === r.id).length;
+    return `
+      <div class="reward-card${redeemedCount > 0 ? ' redeemed' : ''}" data-reward-id="${r.id}">
+        <div class="reward-icon">${r.icon}</div>
+        <div class="reward-name">${escHtml(r.name)}</div>
+        ${r.description ? `<div class="reward-desc">${escHtml(r.description)}</div>` : ''}
+        <div class="reward-cost">${r.energyCost} ⚡</div>
+        <button class="btn-redeem" ${canAfford ? '' : 'disabled'}>
+          ${canAfford ? '立即兑换' : '能量不足'}
+        </button>
+        ${redeemedCount > 0 ? `<div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">已兑换 ${redeemedCount} 次</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.btn-redeem:not([disabled])').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const card = btn.closest('.reward-card');
+      if (card) openRedeemConfirm(card.dataset.rewardId);
+    });
+  });
+}
+
+function renderRedeemHistory() {
+  const section = $('#redeemHistorySection');
+  const list = $('#redeemList');
+  if (!section || !list) return;
+
+  if (appData.redeemHistory.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  const recent = [...appData.redeemHistory].reverse().slice(0, 10);
+
+  list.innerHTML = recent.map(rh => {
+    const reward = appData.rewards.find(r => r.id === rh.rewardId);
+    const d = new Date(rh.redeemedAt);
+    const dateStr = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
+    return `
+      <div class="redeem-item">
+        <span class="redeem-icon">${reward ? reward.icon : '🎁'}</span>
+        <div class="redeem-info">
+          <div class="redeem-name">${reward ? escHtml(reward.name) : '已删除的奖励'}</div>
+          <div class="redeem-date">${dateStr}</div>
+        </div>
+        <span class="redeem-cost">-${rh.energyCost} ⚡</span>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ===== Redeem Flow ===== */
+let pendingRedeemRewardId = null;
+
+function openRedeemConfirm(rewardId) {
+  const reward = appData.rewards.find(r => r.id === rewardId);
+  if (!reward) return;
+
+  const currentEnergy = getCurrentEnergy();
+  if (currentEnergy < reward.energyCost) return;
+
+  pendingRedeemRewardId = rewardId;
+
+  $('#redeemConfirmIcon').textContent = reward.icon;
+  $('#redeemConfirmCost').textContent = reward.energyCost + ' ⚡';
+  $('#redeemConfirmRemain').textContent = (currentEnergy - reward.energyCost) + ' ⚡';
+
+  $('#modalRedeem').classList.add('active');
+}
+
+function confirmRedeem() {
+  if (!pendingRedeemRewardId) return;
+
+  const reward = appData.rewards.find(r => r.id === pendingRedeemRewardId);
+  if (!reward) return;
+
+  const currentEnergy = getCurrentEnergy();
+  if (currentEnergy < reward.energyCost) {
+    pendingRedeemRewardId = null;
+    $('#modalRedeem').classList.remove('active');
+    alert('能量不足，无法兑换！');
+    return;
+  }
+
+  // Record redemption
+  appData.redeemHistory.push({
+    id: uid(),
+    rewardId: reward.id,
+    energyCost: reward.energyCost,
+    redeemedAt: new Date().toISOString()
+  });
+
+  // Update energy history
+  updateEnergyHistory(todayStr());
+
+  saveData(appData);
+  pendingRedeemRewardId = null;
+
+  // Close confirm modal
+  $('#modalRedeem').classList.remove('active');
+
+  // Show success toast with remaining energy
+  showRedeemToast(reward, getCurrentEnergy());
+
+  // Refresh rewards tab
+  renderRewards();
+  updateHeaderEnergy();
+  updateEnergyRing();
+}
+
+function showRedeemToast(reward, remainingEnergy) {
+  $('#redeemToastEnergy').textContent = '剩余能量：' + remainingEnergy + ' ⚡';
+  const toast = $('#redeemToast');
+  toast.classList.add('active');
+  setTimeout(() => {
+    toast.classList.remove('active');
+  }, 1800);
+}
+
+$('#btnConfirmRedeem').addEventListener('click', confirmRedeem);
+
+/* ===== Render: Profile ===== */
+function renderProfile() {
+  const totalEarned = getTotalEnergyEarned();
+  const totalSpent = getTotalEnergySpent();
+  const streak = getStreak();
+  let totalCheckins = 0;
+  Object.values(appData.habitLogs).forEach(logs => {
+    totalCheckins += Object.keys(logs).length;
+  });
+
+  $('#profileTotalEnergy').textContent = totalEarned;
+  $('#profileStreak').textContent = (appData.streakBest || 0) + '天';
+  $('#profileCheckins').textContent = totalCheckins + '次';
+
+  renderHabitManageList();
+  renderEnergyChart();
+}
+
+function renderHabitManageList() {
+  const container = $('#habitManageList');
+  if (!container) return;
+
+  if (appData.habits.length === 0) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-icon">🌟</span><p>添加你的第一个习惯吧</p></div>`;
+    return;
+  }
+
+  container.innerHTML = appData.habits.map(h => {
+    const freqStr = ['日', '一', '二', '三', '四', '五', '六']
+      .filter((_, i) => h.frequency.includes(['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][i]))
+      .join('·');
+    return `
+      <div class="habit-manage-item" data-habit-id="${h.id}">
+        <span class="hm-icon">${h.icon}</span>
+        <div class="hm-info">
+          <div class="hm-name">${escHtml(h.name)}</div>
+          <div class="hm-meta">${h.category} · ${freqStr || '无重复'}</div>
+        </div>
+        <span class="hm-energy">+${h.energyValue} ⚡</span>
+        <button class="hm-delete" data-action="delete-habit">🗑</button>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('[data-action="delete-habit"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const item = btn.closest('.habit-manage-item');
+      if (item) deleteHabit(item.dataset.habitId);
+    });
+  });
+
+  container.querySelectorAll('.habit-manage-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (e.target.closest('[data-action]')) return;
+      openEditHabitModal(item.dataset.habitId);
+    });
+  });
+}
+
+function deleteHabit(habitId) {
+  if (!confirm('确定要删除这个习惯吗？已有的打卡记录会保留。')) return;
+  appData.habits = appData.habits.filter(h => h.id !== habitId);
+  saveData(appData);
+  renderToday();
+  renderProfile();
+}
+
+function renderEnergyChart() {
+  const container = $('#energyChart');
+  if (!container) return;
+
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
+  }
+
+  const data = days.map(date => {
+    const logs = appData.habitLogs[date] || {};
+    let earned = 0;
+    appData.habits.forEach(h => {
+      if (logs[h.id]) earned += h.energyValue;
+    });
+    const redeemForDay = appData.redeemHistory.filter(rh => {
+      const d = new Date(rh.redeemedAt);
+      const ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      return ds === date;
+    });
+    const spent = redeemForDay.reduce((s, r) => s + r.energyCost, 0);
+    return { date, earned, spent, net: earned - spent };
+  });
+
+  const maxVal = Math.max(...data.map(d => Math.max(d.earned, d.spent, 5)), 20);
+
+  container.innerHTML = data.map(d => {
+    const h = Math.max((d.earned / maxVal) * 100, 4);
+    const isNetNegative = d.net < 0;
+    const label = new Date(d.date + 'T00:00:00').getDate() + '日';
+    return `
+      <div class="chart-bar-wrap">
+        <span class="chart-value">${d.net >= 0 ? '+' : ''}${d.net}</span>
+        <div class="chart-bar${isNetNegative ? ' negative' : ''}" style="height:${h}px;"></div>
+        <span class="chart-label">${label}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ===== Modals ===== */
+function closeAllModals() {
+  $('.modal-overlay').forEach(m => m.classList.remove('active'));
+}
+
+$('.modal-close').forEach(btn => {
+  btn.addEventListener('click', closeAllModals);
+});
+
+$('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeAllModals();
+  });
+});
+
+/* ===== Habit Modal ===== */
+const DEFAULT_ICONS = ['🌅', '🏃', '📚', '💪', '🧘', '🎯', '✍️', '🎨', '🎵', '🌿', '💧', '🍎', '😴', '📝', '💻', '🧹', '🐾', '☕', '💊', '🧠'];
+const REWARD_ICONS = ['🎬', '📺', '🎮', '🍰', '🧋', '☕', '🛍️', '🎁', '🍕', '🍣', '🎪', '✈️', '🎵', '📱', '💤', '🛀', '🍿', '🎧', '👗', '🍩'];
+
+function openAddHabitModal() {
+  $('#modalHabitTitle').textContent = '添加习惯';
+  $('#habitEditId').value = '';
+  $('#habitName').value = '';
+  $('#habitEnergy').value = 10;
+  $('#habitEnergyLabel').textContent = '10 ⚡';
+  $('#habitCategory').value = '健康';
+  $('#habitTimeOfDay').value = 'anytime';
+  renderIconPicker('iconPicker', DEFAULT_ICONS, null);
+  renderWeekdayPicker([]);
+  $('#modalHabit').classList.add('active');
+}
+
+function openEditHabitModal(habitId) {
+  const habit = appData.habits.find(h => h.id === habitId);
+  if (!habit) return;
+  $('#modalHabitTitle').textContent = '编辑习惯';
+  $('#habitEditId').value = habit.id;
+  $('#habitName').value = habit.name;
+  $('#habitEnergy').value = habit.energyValue;
+  $('#habitEnergyLabel').textContent = habit.energyValue + ' ⚡';
+  $('#habitCategory').value = habit.category;
+  $('#habitTimeOfDay').value = habit.timeOfDay;
+  renderIconPicker('iconPicker', DEFAULT_ICONS, habit.icon);
+  renderWeekdayPicker(habit.frequency);
+  $('#modalHabit').classList.add('active');
+}
+
+function renderIconPicker(containerId, icons, selected) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = icons.map(icon => `
+    <div class="icon-option${icon === selected ? ' selected' : ''}" data-icon="${icon}">${icon}</div>
+  `).join('');
+  container.querySelectorAll('.icon-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      container.querySelectorAll('.icon-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+}
+
+function renderWeekdayPicker(selectedDays) {
+  const container = $('#weekdayPicker');
+  if (!container) return;
+  const keys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const labels = ['日', '一', '二', '三', '四', '五', '六'];
+  container.innerHTML = keys.map((k, i) => `
+    <div class="wd-option${selectedDays.includes(k) ? ' selected' : ''}" data-day="${k}">${labels[i]}</div>
+  `).join('');
+  container.querySelectorAll('.wd-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      opt.classList.toggle('selected');
+    });
+  });
+}
+
+$('#habitEnergy').addEventListener('input', function() {
+  $('#habitEnergyLabel').textContent = this.value + ' ⚡';
+});
+
+$('#btnSaveHabit').addEventListener('click', () => {
+  const name = $('#habitName').value.trim();
+  if (!name) return alert('请输入习惯名称');
+
+  const iconPicker = $('#iconPicker');
+  const selectedIcon = iconPicker.querySelector('.icon-option.selected');
+  const icon = selectedIcon ? selectedIcon.dataset.icon : DEFAULT_ICONS[0];
+
+  const category = $('#habitCategory').value;
+  const energyValue = parseInt($('#habitEnergy').value);
+  const timeOfDay = $('#habitTimeOfDay').value;
+
+  const weekdayPicker = $('#weekdayPicker');
+  const selectedWeekdays = [...weekdayPicker.querySelectorAll('.wd-option.selected')].map(el => el.dataset.day);
+  if (selectedWeekdays.length === 0) return alert('请至少选择一个重复日');
+
+  const editId = $('#habitEditId').value;
+
+  if (editId) {
+    const habit = appData.habits.find(h => h.id === editId);
+    if (habit) {
+      habit.name = name;
+      habit.icon = icon;
+      habit.category = category;
+      habit.energyValue = energyValue;
+      habit.timeOfDay = timeOfDay;
+      habit.frequency = selectedWeekdays;
+    }
+  } else {
+    appData.habits.push({
+      id: uid(),
+      name,
+      icon,
+      category,
+      energyValue,
+      timeOfDay,
+      frequency: selectedWeekdays
+    });
+  }
+
+  saveData(appData);
+  closeAllModals();
+  renderToday();
+  renderProfile();
+});
+
+$('#btnAddHabit').addEventListener('click', openAddHabitModal);
+
+/* ===== Plan Modal ===== */
+$('#btnAddPlan').addEventListener('click', () => {
+  $('#planTitle').value = '';
+  $('#planDate').value = todayStr();
+  $('#planTime').value = '';
+  $('#planDesc').value = '';
+  $('#modalPlan').classList.add('active');
+});
+
+$('#btnSavePlan').addEventListener('click', () => {
+  const title = $('#planTitle').value.trim();
+  if (!title) return alert('请输入计划标题');
+  appData.plans.push({
+    id: uid(),
+    title,
+    date: $('#planDate').value || todayStr(),
+    time: $('#planTime').value || '',
+    description: $('#planDesc').value.trim(),
+    completed: false,
+    createdAt: new Date().toISOString()
+  });
+  saveData(appData);
+  closeAllModals();
+  renderPlans();
+});
+
+/* ===== Reward Modal ===== */
+$('#btnAddReward').addEventListener('click', () => {
+  $('#rewardName').value = '';
+  $('#rewardCost').value = 30;
+  $('#rewardCostLabel').textContent = '30 ⚡';
+  $('#rewardDesc').value = '';
+  renderIconPicker('rewardIconPicker', REWARD_ICONS, null);
+  $('#modalReward').classList.add('active');
+});
+
+$('#rewardCost').addEventListener('input', function() {
+  $('#rewardCostLabel').textContent = this.value + ' ⚡';
+});
+
+$('#btnSaveReward').addEventListener('click', () => {
+  const name = $('#rewardName').value.trim();
+  if (!name) return alert('请输入奖励名称');
+
+  const iconPicker = $('#rewardIconPicker');
+  const selectedIcon = iconPicker.querySelector('.icon-option.selected');
+  const icon = selectedIcon ? selectedIcon.dataset.icon : REWARD_ICONS[0];
+
+  const energyCost = parseInt($('#rewardCost').value);
+  const description = $('#rewardDesc').value.trim();
+
+  appData.rewards.push({
+    id: uid(),
+    name,
+    icon,
+    energyCost,
+    description,
+    createdAt: new Date().toISOString()
+  });
+
+  saveData(appData);
+  closeAllModals();
+  renderRewards();
+});
+
+/* ===== Reset ===== */
+$('#btnReset').addEventListener('click', () => {
+  if (!confirm('确定要重置所有数据吗？此操作不可恢复！')) return;
+  if (!confirm('再次确认：所有习惯、计划、奖励和打卡记录将被清空。')) return;
+  appData = getDefaultData();
+  saveData(appData);
+  renderToday();
+  renderProfile();
+  renderRewards();
+  renderPlans();
+});
+
+/* ===== Init ===== */
+function initApp() {
+  // SVG gradient for energy ring
+  const svgDefs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  gradient.id = 'ringGradient';
+  gradient.setAttribute('x1', '0%');
+  gradient.setAttribute('y1', '0%');
+  gradient.setAttribute('x2', '100%');
+  gradient.setAttribute('y2', '100%');
+  const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop1.setAttribute('offset', '0%');
+  stop1.setAttribute('stop-color', '#667eea');
+  const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop2.setAttribute('offset', '100%');
+  stop2.setAttribute('stop-color', '#764ba2');
+  gradient.appendChild(stop1);
+  gradient.appendChild(stop2);
+  svgDefs.appendChild(gradient);
+  const ring = $('#energyRing');
+  if (ring) {
+    ring.parentElement.insertBefore(svgDefs, ring);
+    const circumference = 2 * Math.PI * 85;
+    ring.setAttribute('stroke-dasharray', circumference);
+    ring.setAttribute('stroke-dashoffset', circumference);
+  }
+
+  renderToday();
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
+
+</script>
+</body>
+</html>
