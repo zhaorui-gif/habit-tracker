@@ -1657,6 +1657,122 @@ body {
 }
 
 /* ==========================================================================
+   Auth Overlay — Login / Register
+   ========================================================================== */
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--forest-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 24px;
+  transition: opacity 0.3s ease;
+}
+
+.auth-overlay.hidden {
+  display: none;
+}
+
+.auth-card {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 32px 24px 24px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: var(--elevation-4);
+}
+
+.auth-logo {
+  font-size: 2.8rem;
+  margin-bottom: 8px;
+}
+
+.auth-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.auth-sub {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-weight: 350;
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  text-align: left;
+}
+
+.auth-form .form-group {
+  margin-bottom: 12px;
+}
+
+.btn-auth-submit {
+  width: 100%;
+  padding: 12px;
+  background: var(--forest-900);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  letter-spacing: 0.02em;
+  margin-top: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-auth-submit:active {
+  transform: scale(0.97);
+  background: var(--accent-hover);
+}
+
+.btn-auth-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-switch {
+  margin-top: 16px;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+}
+
+.auth-switch a {
+  color: var(--forest-900);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-skip {
+  margin-top: 12px;
+  font-size: 0.72rem;
+}
+
+.auth-skip a {
+  color: var(--text-tertiary);
+  text-decoration: none;
+}
+
+.auth-msg {
+  font-size: 0.75rem;
+  margin-top: 8px;
+  min-height: 18px;
+}
+
+.auth-msg.error { color: #B0504A; }
+.auth-msg.success { color: var(--forest-500); }
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 

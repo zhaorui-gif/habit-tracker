@@ -1,14 +1,22 @@
 /* ===== Storage ===== */
 const STORAGE_KEY = 'energy_tracker_v2';
 
-function loadData() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return getDefaultData();
-  try { return migrateData(JSON.parse(raw)); }
-  catch (e) { return getDefaultData(); }
+async function loadData() {
+  if (currentUser && isSupabaseConfigured()) {
+    try { return await dbLoadAll(); }
+    catch (e) { console.error('云端加载失败:', e.message); }
+  }
+  return loadFromLocalStorage();
 }
 
-function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function saveData(data) {
+  // 本地立即保存
+  dbSaveLocal(data);
+  // 云端异步同步（不阻塞 UI）
+  if (currentUser && isSupabaseConfigured()) {
+    dbSaveAll(data).catch(e => console.error('云端同步失败:', e.message));
+  }
+}
 
 function getDefaultData() {
   const demoHabits = [
@@ -76,9 +84,10 @@ function getWeekdayLabel(n) { return ['日','一','二','三','四','五','六']
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
 /* ===== App State ===== */
-let appData = loadData();
+let appData = null;
 let currentCalendarView = 'week';
 let selectedPlanDate = todayStr();
+let isAuthMode = false; // true = 注册，false = 登录
 
 /* ===== DOM ===== */
 function $(sel) { return document.querySelector(sel); }
@@ -1059,14 +1068,139 @@ $('#btnReset').addEventListener('click', () => {
 });
 
 /* ===== Init ===== */
-function initApp() {
+async function initApp() {
+  // Setup energy ring
   const ring = $('#energyRing');
   if (ring) {
     const c = 2 * Math.PI * 78;
     ring.setAttribute('stroke-dasharray', c);
     ring.setAttribute('stroke-dashoffset', c);
   }
-  renderToday();
+
+  // Auth listener
+  initAuthListener();
+
+  // Check existing session
+  const user = await checkSession();
+  if (user) {
+    // Already logged in → load cloud data and show app
+    const overlay = $('#authOverlay');
+    if (overlay) overlay.classList.add('hidden');
+    appData = await loadData();
+    renderToday();
+  } else {
+    // Not logged in → show auth overlay, load local data as fallback
+    appData = loadFromLocalStorage();
+    renderToday();
+  }
+
+  // Setup auth UI handlers
+  setupAuthUI();
+}
+
+// ---- Auth UI ----
+function setupAuthUI() {
+  const toggle = $('#authToggleLink');
+  const title = $('#authTitle');
+  const sub = $('#authSub');
+  const submitBtn = $('#authSubmit');
+  const nameGroup = $('#nameGroup');
+  const skipBtn = $('#authSkip');
+  const form = $('#authForm');
+
+  if (toggle) {
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      isAuthMode = !isAuthMode;
+      if (isAuthMode) {
+        title.textContent = '创建账号';
+        sub.textContent = '注册后数据将云端同步';
+        submitBtn.textContent = '注册';
+        nameGroup.style.display = 'block';
+        toggle.textContent = '登录';
+      } else {
+        title.textContent = '欢迎回来';
+        sub.textContent = '登录以同步你的数据';
+        submitBtn.textContent = '登录';
+        nameGroup.style.display = 'none';
+        toggle.textContent = '注册';
+      }
+    });
+  }
+
+  if (skipBtn) {
+    skipBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const overlay = $('#authOverlay');
+      if (overlay) overlay.classList.add('hidden');
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('#authEmail').value.trim();
+      const password = $('#authPassword').value;
+      if (!email || !password) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = isAuthMode ? '注册中…' : '登录中…';
+
+      let result;
+      if (isAuthMode) {
+        result = await signUp(email, password);
+      } else {
+        result = await signIn(email, password);
+      }
+
+      if (result.error) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = isAuthMode ? '注册' : '登录';
+        // Show error
+        let msg = $('#authMsg');
+        if (!msg) {
+          msg = document.createElement('p');
+          msg.id = 'authMsg';
+          msg.className = 'auth-msg error';
+          form.appendChild(msg);
+        }
+        msg.textContent = result.error.message || '操作失败，请重试';
+        msg.className = 'auth-msg error';
+      } else if (!isAuthMode) {
+        // Login success
+        const overlay = $('#authOverlay');
+        if (overlay) overlay.classList.add('hidden');
+        appData = await loadData();
+        renderToday();
+      } else {
+        // Register success — Supabase sent verification email
+        submitBtn.disabled = false;
+        submitBtn.textContent = '注册';
+        let msg = $('#authMsg');
+        if (!msg) {
+          msg = document.createElement('p');
+          msg.id = 'authMsg';
+          msg.className = 'auth-msg';
+          form.appendChild(msg);
+        }
+        msg.textContent = '✓ 验证邮件已发送，请查收邮箱后重新登录';
+        msg.className = 'auth-msg success';
+      }
+    });
+  }
+
+  // Override auth callbacks
+  onUserSignedIn = async function() {
+    appData = await loadData();
+    renderToday();
+  };
+
+  onUserSignedOut = function() {
+    appData = loadFromLocalStorage();
+    renderToday();
+    const overlay = $('#authOverlay');
+    if (overlay) overlay.classList.remove('hidden');
+  };
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

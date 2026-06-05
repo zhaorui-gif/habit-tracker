@@ -10,6 +10,36 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- ===== 登录/注册覆盖层 ===== -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-card">
+      <div class="auth-logo">⚡</div>
+      <h2 class="auth-title" id="authTitle">欢迎回来</h2>
+      <p class="auth-sub" id="authSub">登录以同步你的数据</p>
+      <form class="auth-form" id="authForm">
+        <div class="form-group" id="nameGroup" style="display:none;">
+          <label>昵称</label>
+          <input type="text" id="authName" placeholder="你的名字" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label>邮箱</label>
+          <input type="email" id="authEmail" placeholder="your@email.com" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label>密码</label>
+          <input type="password" id="authPassword" placeholder="至少 6 位" minlength="6" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn-auth-submit" id="authSubmit">登录</button>
+      </form>
+      <p class="auth-switch" id="authSwitch">
+        还没有账号？<a href="#" id="authToggleLink">注册</a>
+      </p>
+      <p class="auth-skip" id="authSkip">
+        <a href="#">跳过，先体验本地模式</a>
+      </p>
+    </div>
+  </div>
+
   <div class="app-container">
 
     <!-- ===== 今日 Tab ===== -->
@@ -321,6 +351,9 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="db.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
